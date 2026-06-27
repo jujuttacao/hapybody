@@ -12,11 +12,17 @@ const SupabaseClient = (() => {
     KEY: 'hb_sb_key'
   };
 
-  // Get credentials
+  // Default credentials (pre-configured for HapyBody+ production)
+  const DEFAULTS = {
+    URL: 'https://nwqcldkkhyyilrxzovpk.supabase.co',
+    KEY: 'sb_publishable_NpcNIBjQ8KtuGLUqhtnpPQ_cJG_ED57'
+  };
+
+  // Get credentials — use hardcoded defaults if nothing is stored
   function getCredentials() {
     return {
-      url: localStorage.getItem(KEYS.URL) || '',
-      key: localStorage.getItem(KEYS.KEY) || ''
+      url: localStorage.getItem(KEYS.URL) || DEFAULTS.URL,
+      key: localStorage.getItem(KEYS.KEY) || DEFAULTS.KEY
     };
   }
 
