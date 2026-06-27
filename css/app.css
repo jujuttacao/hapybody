@@ -793,11 +793,50 @@ button, input, select, textarea {
 
 /* Responsive Adaptive States */
 @media (max-width: 1024px) {
-  .sidebar {
-    display: none; /* hide sidebar on mobile/tablet */
+  .app-container {
+    flex-direction: column;
   }
-  .mobile-navbar {
-    display: flex; /* show floating bottom navbar */
+  .sidebar {
+    width: 100%;
+    height: 70px;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    z-index: 1000;
+    flex-direction: row;
+    padding: 0;
+    border-right: none;
+    border-top: 1px solid var(--border);
+    justify-content: center;
+    background-color: var(--bg-elevated);
+  }
+  .sidebar > div:first-child {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+  .sidebar-logo, .sidebar-user, .nav-text {
+    display: none !important;
+  }
+  .sidebar-menu {
+    flex-direction: row;
+    justify-content: space-around;
+    width: 100%;
+    max-width: 500px;
+    padding: 0 10px;
+    margin: 0;
+  }
+  .sidebar-item {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 14px 16px;
+    border-radius: var(--radius-lg);
+    font-size: 1.4rem;
+  }
+  .sidebar-item.active {
+    box-shadow: 0 -4px 0 var(--accent-green) inset;
+    background-color: transparent;
   }
   .app-header {
     padding: 16px 20px;
@@ -805,7 +844,7 @@ button, input, select, textarea {
   .view-container {
     padding: 20px 20px 100px 20px;
   }
-  .dash-layout {
+  .dash-layout, .progress-grid {
     grid-template-columns: 1fr;
   }
 }
