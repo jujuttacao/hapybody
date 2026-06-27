@@ -188,16 +188,13 @@ function initOnboarding() {
       });
     }
 
-    // Slide 1 direct login redirect link
+    // Slide 1 direct login redirect link — skip to step 2 in demo mode
     const loginLink = document.getElementById('onboarding-login-link');
     if (loginLink) {
       loginLink.addEventListener('click', (e) => {
         e.preventDefault();
-        overlay.classList.add('hidden');
-        
-        // Open Auth modal
-        const auth = document.getElementById('auth-modal');
-        if (auth) auth.classList.remove('hidden');
+        document.getElementById('onboard-step-1').classList.add('hidden');
+        document.getElementById('onboard-step-2').classList.remove('hidden');
       });
     }
 

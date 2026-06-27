@@ -45,17 +45,11 @@ const ProfileView = (() => {
       });
     }
 
-    // 2. Password & Security row click listener (Trigger login/signup auth modal)
+    // 2. Password & Security row click listener
     const securityRow = document.getElementById('profile-row-security');
     if (securityRow) {
       securityRow.addEventListener('click', () => {
-        if (window.SupabaseClient && SupabaseClient.getUser()) {
-          Toast.show('Ya has iniciado sesión con Supabase', 'success');
-        } else {
-          // Open Auth Modal
-          const modal = document.getElementById('auth-modal');
-          if (modal) modal.classList.remove('hidden');
-        }
+        Toast.show('Seguridad y contraseñas — próximamente', 'info');
       });
     }
 
