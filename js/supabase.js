@@ -18,11 +18,11 @@ const SupabaseClient = (() => {
     KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im53cWNsZGtraHl5aWx4cnpvdnBrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI1NDcxNTUsImV4cCI6MjA5ODEyMzE1NX0.F7BpCki5yF_VTwSWplmA_hEcYV1inTru19bQA8lmndM'
   };
 
-  // Get credentials — use hardcoded defaults if nothing is stored
+  // Get credentials — force hardcoded defaults to bypass old localstorage state
   function getCredentials() {
     return {
-      url: localStorage.getItem(KEYS.URL) || DEFAULTS.URL,
-      key: localStorage.getItem(KEYS.KEY) || DEFAULTS.KEY
+      url: DEFAULTS.URL,
+      key: DEFAULTS.KEY
     };
   }
 
