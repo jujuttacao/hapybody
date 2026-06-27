@@ -44,14 +44,27 @@ const SupabaseClient = (() => {
     const creds = getCredentials();
     if (creds.url && creds.key) {
       try {
-        // supabase is loaded globally via CDN
-        if (window.supabase) {
-          client = window.supabase.createClient(creds.url, creds.key, {
+        // Detect createClient from multiple CDN UMD export patterns
+        let createClientFn = null;
+        if (window.supabase && typeof window.supabase.createClient === 'function') {
+          createClientFn = window.supabase.createClient;
+        } else if (window.supabaseJs && typeof window.supabaseJs.createClient === 'function') {
+          createClientFn = window.supabaseJs.createClient;
+        } else if (typeof window.createClient === 'function') {
+          createClientFn = window.createClient;
+        }
+
+        if (createClientFn) {
+          client = createClientFn(creds.url, creds.key, {
             auth: {
               persistSession: true,
               autoRefreshToken: true
             }
           });
+          console.log('✅ Supabase client initialized successfully');
+        } else {
+          console.warn('⚠️ Supabase SDK not found on window — retrying in 500ms');
+          setTimeout(init, 500);
         }
       } catch (e) {
         console.error('Error initializing Supabase client:', e);
@@ -69,7 +82,11 @@ const SupabaseClient = (() => {
   // Run test connection
   async function testConnection(url, key) {
     try {
-      const tempClient = window.supabase.createClient(url.trim(), key.trim());
+      let createClientFn = (window.supabase && window.supabase.createClient)
+        || (window.supabaseJs && window.supabaseJs.createClient)
+        || window.createClient;
+      if (!createClientFn) throw new Error('SDK not loaded');
+      const tempClient = createClientFn(url.trim(), key.trim());
       const { data, error } = await tempClient.from('profiles').select('id').limit(1);
       // If we get here without auth errors, or even if it's empty, we connected successfully
       if (error && error.code !== 'PGRST116') { // PGRST116 is empty (okay)
