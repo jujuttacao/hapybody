@@ -290,6 +290,14 @@ function initAuthModal() {
     modal.classList.add('hidden');
   });
 
+  const guestBtn = document.getElementById('auth-guest-btn');
+  if (guestBtn) {
+    guestBtn.addEventListener('click', () => {
+      modal.classList.add('hidden');
+      Toast.show('Modo Invitado Activo ✓', 'success');
+    });
+  }
+
   switchLink.addEventListener('click', (e) => {
     e.preventDefault();
     isSignUpMode = !isSignUpMode;
