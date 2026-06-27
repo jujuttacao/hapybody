@@ -15,7 +15,7 @@ const SupabaseClient = (() => {
   // Default credentials (pre-configured for HapyBody+ production)
   const DEFAULTS = {
     URL: 'https://nwqcldkkhyyilrxzovpk.supabase.co',
-    KEY: 'sb_publishable_NpcNIBjQ8KtuGLUqhtnpPQ_cJG_ED57'
+    KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im53cWNsZGtraHl5aWx4cnpvdnBrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI1NDcxNTUsImV4cCI6MjA5ODEyMzE1NX0.F7BpCki5yF_VTwSWplmA_hEcYV1inTru19bQA8lmndM'
   };
 
   // Get credentials — use hardcoded defaults if nothing is stored
