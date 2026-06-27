@@ -599,69 +599,7 @@
     </div>
   </div>
 
-  <!-- ===== SUPABASE LOGIN/REGISTRATION MODAL ===== -->
-  <div id="auth-modal" class="onboarding-overlay hidden">
-    <div class="onboarding-card auth-card-iOS" style="max-width:390px; background:#fff; color:#111; border-radius:30px; padding:36px 28px; border:none; box-shadow:0 20px 50px rgba(0,0,0,0.15);">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px;">
-        <h2 id="auth-modal-title" style="font-size:1.6rem; font-weight:800; color:#111; letter-spacing:-0.03em;">Login</h2>
-        <button id="auth-modal-close" style="background:transparent; border:none; color:#777; cursor:pointer; font-size:1.2rem; padding:4px;">✕</button>
-      </div>
-      
-      <!-- Input fields -->
-      <div class="form-group" style="margin-bottom:14px; display:flex; flex-direction:column; gap:4px;">
-        <div style="position:relative; display:flex; align-items:center;">
-          <span style="position:absolute; left:14px; color:#999; font-size:1rem;">✉️</span>
-          <input type="email" id="auth-email" placeholder="Email" style="width:100%; padding:12px 12px 12px 42px; border-radius:14px; border:1px solid #e2e8f0; background:#f8fafc; color:#111; font-size:0.92rem; outline:none;">
-        </div>
-      </div>
-      
-      <div class="form-group" style="margin-bottom:8px; display:flex; flex-direction:column; gap:4px;">
-        <div style="position:relative; display:flex; align-items:center;">
-          <span style="position:absolute; left:14px; color:#999; font-size:1rem;">🔒</span>
-          <input type="password" id="auth-password" placeholder="Password" style="width:100%; padding:12px 12px 12px 42px; border-radius:14px; border:1px solid #e2e8f0; background:#f8fafc; color:#111; font-size:0.92rem; outline:none;">
-        </div>
-      </div>
-
-      <div class="form-group hidden" id="auth-name-group" style="margin-bottom:14px; display:flex; flex-direction:column; gap:4px;">
-        <div style="position:relative; display:flex; align-items:center;">
-          <span style="position:absolute; left:14px; color:#999; font-size:1rem;">👤</span>
-          <input type="text" id="auth-name" placeholder="User Name" style="width:100%; padding:12px 12px 12px 42px; border-radius:14px; border:1px solid #e2e8f0; background:#f8fafc; color:#111; font-size:0.92rem; outline:none;">
-        </div>
-      </div>
-
-      <div style="text-align:right; margin-bottom:20px;">
-        <a href="#" style="font-size:0.8rem; color:#666; font-weight:600; text-decoration:none;">Forgot Password?</a>
-      </div>
-
-      <button id="auth-submit-btn" style="width:100%; padding:14px; border-radius:14px; background:#1b300f; color:#fff; font-weight:700; border:none; cursor:pointer; font-size:0.94rem; margin-bottom:20px; transition:transform 0.2s;">Login</button>
-
-      <!-- Separator -->
-      <div style="display:flex; align-items:center; justify-content:center; gap:10px; margin-bottom:20px; color:#aaa; font-size:0.8rem; font-weight:600;">
-        <div style="flex-grow:1; height:1px; background:#e2e8f0;"></div>
-        <span>or</span>
-        <div style="flex-grow:1; height:1px; background:#e2e8f0;"></div>
-      </div>
-
-      <!-- Social Logins -->
-      <div style="display:flex; flex-direction:column; gap:10px; margin-bottom:24px;">
-        <button class="btn-social-iOS" style="width:100%; padding:12px; border-radius:14px; border:1px solid #e2e8f0; background:#f8fafc; color:#333; font-weight:600; font-size:0.88rem; display:flex; align-items:center; justify-content:center; gap:10px; cursor:pointer;" onclick="Toast.show('Iniciando con Google...', 'success')">
-          <span style="font-size:1.1rem;">🌐</span> Continue with Google
-        </button>
-        <button class="btn-social-iOS" style="width:100%; padding:12px; border-radius:14px; border:1px solid #e2e8f0; background:#a3e635; color:#000; font-weight:600; font-size:0.88rem; display:flex; align-items:center; justify-content:center; gap:10px; cursor:pointer;" onclick="Toast.show('Iniciando con Apple...', 'success')">
-          <span style="font-size:1.1rem;">🍏</span> Continue with Apple
-        </button>
-        <button class="btn-social-iOS" id="auth-guest-btn" style="width:100%; padding:12px; border-radius:14px; border:1px solid #e2e8f0; background:#f8fafc; color:#333; font-weight:600; font-size:0.88rem; display:flex; align-items:center; justify-content:center; gap:10px; cursor:pointer;">
-          <span style="font-size:1.1rem;">👤</span> Continue As Guest
-        </button>
-      </div>
-
-      <!-- Bottom link switcher -->
-      <p style="text-align:center; font-size:0.84rem; color:#666;">
-        <span id="auth-switch-text">Need an account?</span> 
-        <a href="#" id="auth-switch-link" style="color:#1b300f; font-weight:800; text-decoration:none; margin-left:4px;">Sign up</a>
-      </p>
-    </div>
-  </div>
+  <!-- ===== SUPABASE LOGIN/REGISTRATION MODAL (REMOVED FOR DEMO) ===== -->
 
   <!-- ===== TOAST NOTIFICATION CONTAINER ===== -->
   <div id="toast-container" style="position:fixed; top:24px; right:24px; z-index:9999; display:flex; flex-direction:column; gap:10px;"></div>
