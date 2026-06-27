@@ -296,7 +296,21 @@ function formatTime(timeStr) {
 // APP INIT
 // ======================================================
 function initApp() {
-  // 1. Check/reset day
+  // 1. Sincronización asíncrona en segundo plano si está conectado a Supabase
+  if (window.SupabaseClient && SupabaseClient.isConnected()) {
+    SupabaseClient.getSessionUser().then(user => {
+      if (user) {
+        SupabaseClient.downloadAllCloudToLocal(user.id).then(success => {
+          if (success) {
+            Router.navigate(Router.getCurrent());
+            updateSidebarUser();
+          }
+        });
+      }
+    });
+  }
+
+  // 2. Check/reset day
   Storage.checkAndResetDay();
 
   // 2. Seed demo data on first visit

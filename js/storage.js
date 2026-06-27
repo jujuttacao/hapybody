@@ -46,7 +46,14 @@ const Storage = (() => {
   // ---- User ----
   const User = {
     get: () => get(KEYS.USER, null),
-    set: (data) => set(KEYS.USER, data),
+    set: (data) => {
+      set(KEYS.USER, data);
+      if (window.SupabaseClient) {
+        const streak = get(KEYS.STREAK, 0);
+        const lastDate = get(KEYS.LAST_DATE, null);
+        SupabaseClient.updateProfileCloud(data, streak, lastDate);
+      }
+    },
   };
 
   // ---- Theme ----
@@ -105,6 +112,16 @@ const Storage = (() => {
       }
 
       set(KEYS.LAST_DATE, today);
+
+      // Sync updated state to Supabase
+      if (window.SupabaseClient) {
+        SupabaseClient.syncDailyStatsCloud();
+        const user = get(KEYS.USER, null);
+        if (user) {
+          const streak = get(KEYS.STREAK, 0);
+          SupabaseClient.updateProfileCloud(user, streak, today);
+        }
+      }
     }
   }
 
@@ -117,6 +134,7 @@ const Storage = (() => {
       const item = { id: uid(), ...data, completed: false, createdAt: Date.now() };
       list.push(item);
       set(KEYS.EXERCISES, list);
+      if (window.SupabaseClient) SupabaseClient.saveExerciseCloud(item);
       return item;
     },
     toggleComplete: (id) => {
@@ -125,12 +143,14 @@ const Storage = (() => {
       if (idx !== -1) {
         list[idx].completed = !list[idx].completed;
         set(KEYS.EXERCISES, list);
+        if (window.SupabaseClient) SupabaseClient.saveExerciseCloud(list[idx]);
       }
       return list[idx];
     },
     delete: (id) => {
       const list = get(KEYS.EXERCISES, []).filter(e => e.id !== id);
       set(KEYS.EXERCISES, list);
+      if (window.SupabaseClient) SupabaseClient.deleteExerciseCloud(id);
     },
     getTodayGroup: () => {
       const days = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
@@ -147,6 +167,7 @@ const Storage = (() => {
       const item = { id: uid(), ...data, taken: false, createdAt: Date.now() };
       list.push(item);
       set(KEYS.SUPPLEMENTS, list);
+      if (window.SupabaseClient) SupabaseClient.saveSupplementCloud(item);
       return item;
     },
     toggleTaken: (id) => {
@@ -155,12 +176,14 @@ const Storage = (() => {
       if (idx !== -1) {
         list[idx].taken = !list[idx].taken;
         set(KEYS.SUPPLEMENTS, list);
+        if (window.SupabaseClient) SupabaseClient.saveSupplementCloud(list[idx]);
       }
       return list[idx];
     },
     delete: (id) => {
       const list = get(KEYS.SUPPLEMENTS, []).filter(s => s.id !== id);
       set(KEYS.SUPPLEMENTS, list);
+      if (window.SupabaseClient) SupabaseClient.deleteSupplementCloud(id);
     }
   };
 
@@ -172,6 +195,7 @@ const Storage = (() => {
       const item = { id: uid(), ...data, taken: false, createdAt: Date.now() };
       list.push(item);
       set(KEYS.MEDICATIONS, list);
+      if (window.SupabaseClient) SupabaseClient.saveMedicationCloud(item);
       return item;
     },
     toggleTaken: (id) => {
@@ -180,12 +204,14 @@ const Storage = (() => {
       if (idx !== -1) {
         list[idx].taken = !list[idx].taken;
         set(KEYS.MEDICATIONS, list);
+        if (window.SupabaseClient) SupabaseClient.saveMedicationCloud(list[idx]);
       }
       return list[idx];
     },
     delete: (id) => {
       const list = get(KEYS.MEDICATIONS, []).filter(m => m.id !== id);
       set(KEYS.MEDICATIONS, list);
+      if (window.SupabaseClient) SupabaseClient.deleteMedicationCloud(id);
     }
   };
 
@@ -201,11 +227,13 @@ const Storage = (() => {
       const item = { id: uid(), ...data, date: todayStr(), createdAt: Date.now() };
       list.push(item);
       set(KEYS.MEALS, list);
+      if (window.SupabaseClient) SupabaseClient.saveMealCloud(item);
       return item;
     },
     delete: (id) => {
       const list = get(KEYS.MEALS, []).filter(m => m.id !== id);
       set(KEYS.MEALS, list);
+      if (window.SupabaseClient) SupabaseClient.deleteMealCloud(id);
     }
   };
 
@@ -214,11 +242,15 @@ const Storage = (() => {
 
   const Plate = {
     get: () => get(KEYS.PLATE, defaultPlate()),
-    set: (data) => set(KEYS.PLATE, data),
+    set: (data) => {
+      set(KEYS.PLATE, data);
+      if (window.SupabaseClient) SupabaseClient.syncDailyStatsCloud();
+    },
     toggle: (key) => {
       const p = get(KEYS.PLATE, defaultPlate());
       p[key] = !p[key];
       set(KEYS.PLATE, p);
+      if (window.SupabaseClient) SupabaseClient.syncDailyStatsCloud();
       return p;
     }
   };
@@ -235,11 +267,13 @@ const Storage = (() => {
       const item = { id: uid(), ...data, createdAt: Date.now() };
       list.push(item);
       set(KEYS.PROGRESS, list);
+      if (window.SupabaseClient) SupabaseClient.saveProgressCloud(item);
       return item;
     },
     delete: (id) => {
       const list = get(KEYS.PROGRESS, []).filter(p => p.id !== id);
       set(KEYS.PROGRESS, list);
+      if (window.SupabaseClient) SupabaseClient.deleteProgressCloud(id);
     }
   };
 
@@ -272,6 +306,7 @@ const Storage = (() => {
       if (idx !== -1) {
         list[idx].done = !list[idx].done;
         set(KEYS.HABITS, list);
+        if (window.SupabaseClient) SupabaseClient.syncDailyStatsCloud();
       }
       return list;
     },
@@ -281,14 +316,22 @@ const Storage = (() => {
   // ---- Water ----
   const Water = {
     get: () => get(KEYS.WATER, 0),
-    set: (val) => set(KEYS.WATER, Math.max(0, val)),
+    set: (val) => {
+      set(KEYS.WATER, Math.max(0, val));
+      if (window.SupabaseClient) SupabaseClient.syncDailyStatsCloud();
+    },
     add: (goal = 8) => {
       const current = get(KEYS.WATER, 0);
       const newVal = Math.min(current + 1, goal + 4); // allow going over
       set(KEYS.WATER, newVal);
+      if (window.SupabaseClient) SupabaseClient.syncDailyStatsCloud();
       return newVal;
     },
-    reset: () => { set(KEYS.WATER, 0); return 0; }
+    reset: () => {
+      set(KEYS.WATER, 0);
+      if (window.SupabaseClient) SupabaseClient.syncDailyStatsCloud();
+      return 0;
+    }
   };
 
   // ---- Streak ----
@@ -340,6 +383,11 @@ const Storage = (() => {
 
     // 5. Plate
     set(KEYS.PLATE, { protein: false, carb: false, veggies: false, fruit: false, water: false });
+
+    // Sync reset state to Supabase
+    if (window.SupabaseClient) {
+      SupabaseClient.syncDailyStatsCloud();
+    }
   }
 
   // ---- Seed demo data (first visit) ----

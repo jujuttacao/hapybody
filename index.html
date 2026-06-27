@@ -678,34 +678,96 @@
           </div>
         </div>
 
-        <!-- Profile header card -->
-        <div class="profile-header-card" id="profile-header-card">
-          <!-- Populated by JS -->
-        </div>
-
-        <!-- Stats row -->
-        <div class="profile-stats-row" id="profile-stats-row">
-          <!-- Populated by JS -->
-        </div>
-
-        <!-- Edit name -->
-        <div class="card mb-20">
-          <h2 class="section-title mb-16">✏️ Editar nombre</h2>
-          <div class="form-group" style="flex-direction:row;gap:10px;align-items:flex-end">
-            <div style="flex:1">
-              <label for="profile-name-input">Nombre</label>
-              <input type="text" id="profile-name-input" placeholder="Tu nombre..." maxlength="30" autocomplete="off" />
+        <!-- AUTH SECTION (Show when not logged in) -->
+        <div id="profile-auth-section" class="hidden">
+          <div class="card" style="max-width: 480px; margin: 24px auto;">
+            <div id="auth-login-box">
+              <h2 class="section-title mb-8" style="font-size: 1.3rem;">Iniciar Sesión 🔐</h2>
+              <p class="view-subtitle mb-20">Conéctate a tu cuenta para sincronizar tus datos en la nube.</p>
+              
+              <div class="form-group mb-12">
+                <label for="auth-login-email">Correo Electrónico</label>
+                <input type="email" id="auth-login-email" placeholder="ejemplo@correo.com" autocomplete="email" />
+              </div>
+              <div class="form-group mb-20">
+                <label for="auth-login-pass">Contraseña</label>
+                <input type="password" id="auth-login-pass" placeholder="Tu contraseña..." autocomplete="current-password" />
+              </div>
+              
+              <button class="btn btn-primary btn-full btn-large" id="auth-login-submit-btn">Entrar</button>
+              
+              <p style="text-align: center; margin-top: 16px; font-size: 0.84rem; color: var(--text-secondary);">
+                ¿No tienes cuenta? <a href="#" id="auth-goto-signup" style="color: var(--accent-green); font-weight: 600;">Registrarme</a>
+              </p>
             </div>
-            <button class="btn btn-primary" id="profile-save-name-btn">Guardar</button>
+
+            <div id="auth-signup-box" class="hidden">
+              <h2 class="section-title mb-8" style="font-size: 1.3rem;">Crear Cuenta ⚡</h2>
+              <p class="view-subtitle mb-20">Registra tus datos para guardar tus rutinas y progreso en la nube.</p>
+              
+              <div class="form-group mb-12">
+                <label for="auth-signup-name">Nombre</label>
+                <input type="text" id="auth-signup-name" placeholder="Ej: Carlos" autocomplete="name" />
+              </div>
+              <div class="form-group mb-12">
+                <label for="auth-signup-email">Correo Electrónico</label>
+                <input type="email" id="auth-signup-email" placeholder="ejemplo@correo.com" autocomplete="email" />
+              </div>
+              <div class="form-group mb-20">
+                <label for="auth-signup-pass">Contraseña</label>
+                <input type="password" id="auth-signup-pass" placeholder="Mínimo 6 caracteres..." autocomplete="new-password" />
+              </div>
+              
+              <button class="btn btn-primary btn-full btn-large" id="auth-signup-submit-btn">Crear Cuenta</button>
+              
+              <p style="text-align: center; margin-top: 16px; font-size: 0.84rem; color: var(--text-secondary);">
+                ¿Ya tienes cuenta? <a href="#" id="auth-goto-login" style="color: var(--accent-green); font-weight: 600;">Iniciar Sesión</a>
+              </p>
+            </div>
           </div>
         </div>
 
-        <!-- Goal selection -->
-        <div class="card">
-          <h2 class="section-title mb-8">🎯 Mi objetivo principal</h2>
-          <p class="view-subtitle mb-16">Selecciona el objetivo que guíe tu plan de entrenamiento y alimentación.</p>
-          <div class="profile-goal-grid" id="profile-goal-grid">
+        <!-- LOGGED IN SECTION (Show when logged in, or local fallback mode) -->
+        <div id="profile-logged-section">
+          <!-- Profile header card -->
+          <div class="profile-header-card" id="profile-header-card">
             <!-- Populated by JS -->
+          </div>
+
+          <!-- Stats row -->
+          <div class="profile-stats-row" id="profile-stats-row">
+            <!-- Populated by JS -->
+          </div>
+
+          <!-- Edit name -->
+          <div class="card mb-20">
+            <h2 class="section-title mb-16">✏️ Editar nombre</h2>
+            <div class="form-group" style="flex-direction:row;gap:10px;align-items:flex-end">
+              <div style="flex:1">
+                <label for="profile-name-input">Nombre</label>
+                <input type="text" id="profile-name-input" placeholder="Tu nombre..." maxlength="30" autocomplete="off" />
+              </div>
+              <button class="btn btn-primary" id="profile-save-name-btn">Guardar</button>
+            </div>
+          </div>
+
+          <!-- Goal selection -->
+          <div class="card mb-20">
+            <h2 class="section-title mb-8">🎯 Mi objetivo principal</h2>
+            <p class="view-subtitle mb-16">Selecciona el objetivo que guíe tu plan de entrenamiento y alimentación.</p>
+            <div class="profile-goal-grid" id="profile-goal-grid">
+              <!-- Populated by JS -->
+            </div>
+          </div>
+
+          <!-- Cloud Integration Status (Show when logged in) -->
+          <div class="card mb-20 hidden" id="profile-cloud-status-card">
+            <h2 class="section-title mb-8">☁️ Sincronización en la Nube</h2>
+            <p class="view-subtitle mb-16" id="profile-cloud-sync-info">Sesión iniciada con: user@mail.com. Tus datos están a salvo.</p>
+            <div style="display: flex; gap: 8px; justify-content: flex-end;">
+              <button class="btn btn-secondary btn-small" id="profile-cloud-sync-btn">Forzar Sincronización</button>
+              <button class="btn btn-danger btn-small" id="profile-logout-btn">Cerrar Sesión</button>
+            </div>
           </div>
         </div>
       </section>
@@ -731,6 +793,30 @@
               <input type="checkbox" id="settings-theme-toggle" />
               <span class="toggle-slider"></span>
             </label>
+          </div>
+        </div>
+
+        <!-- Base de Datos -->
+        <div class="settings-section">
+          <div class="settings-section-title">Conexión a Base de Datos (Supabase)</div>
+          <div class="settings-row" style="flex-direction: column; align-items: stretch; gap: 12px; padding: 18px 20px;">
+            <div class="settings-row-info">
+              <div class="settings-row-label">Configurar Supabase</div>
+              <div class="settings-row-desc">Escribe las credenciales de tu proyecto de Supabase para habilitar el inicio de sesión y la sincronización.</div>
+            </div>
+            <div class="form-group" style="margin-top: 4px;">
+              <label for="settings-db-url">URL de Supabase</label>
+              <input type="url" id="settings-db-url" placeholder="https://xxxx.supabase.co" autocomplete="off" />
+            </div>
+            <div class="form-group">
+              <label for="settings-db-key">Anon Key de Supabase</label>
+              <input type="password" id="settings-db-key" placeholder="Tu clave anon..." autocomplete="off" />
+            </div>
+            <div style="display: flex; gap: 8px; justify-content: flex-end; margin-top: 8px;">
+              <button class="btn btn-secondary btn-small" id="settings-db-test-btn">Probar Conexión</button>
+              <button class="btn btn-primary btn-small" id="settings-db-save-btn">Guardar Conexión</button>
+            </div>
+            <div id="settings-db-status-msg" style="font-size: 0.8rem; margin-top: 4px; display: none;"></div>
           </div>
         </div>
 
@@ -1049,6 +1135,8 @@
   <div class="toast" id="toast" role="alert" aria-live="polite"></div>
 
   <!-- ==================== SCRIPTS ==================== -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase.js"></script>
   <script src="js/storage.js"></script>
   <script src="js/app.js"></script>
   <script src="js/dashboard.js"></script>

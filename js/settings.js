@@ -9,6 +9,17 @@ const SettingsView = (() => {
     const theme = Storage.Theme.get();
     const themeToggle = document.getElementById('settings-theme-toggle');
     if (themeToggle) themeToggle.checked = theme === 'light';
+
+    // Load Supabase credentials
+    const creds = SupabaseClient.getCredentials();
+    const urlEl = document.getElementById('settings-db-url');
+    const keyEl = document.getElementById('settings-db-key');
+    if (urlEl) urlEl.value = creds.url;
+    if (keyEl) keyEl.value = creds.key;
+
+    // Reset status message
+    const msgEl = document.getElementById('settings-db-status-msg');
+    if (msgEl) msgEl.style.display = 'none';
   }
 
   // ---- Export data to JSON ----
@@ -47,6 +58,56 @@ const SettingsView = (() => {
         Toast.show(next === 'dark' ? 'Modo oscuro activado 🌙' : 'Modo claro activado ☀️', 'default', 1800);
       });
     }
+
+    // Supabase Connection Settings
+    const testBtn = document.getElementById('settings-db-test-btn');
+    const saveBtn = document.getElementById('settings-db-save-btn');
+    const statusMsg = document.getElementById('settings-db-status-msg');
+
+    testBtn?.addEventListener('click', async () => {
+      const url = document.getElementById('settings-db-url')?.value.trim();
+      const key = document.getElementById('settings-db-key')?.value.trim();
+
+      if (!url || !key) {
+        Toast.show('Escribe la URL y la Anon Key', 'warning');
+        return;
+      }
+
+      testBtn.disabled = true;
+      testBtn.textContent = 'Probando...';
+      if (statusMsg) {
+        statusMsg.style.display = 'block';
+        statusMsg.style.color = 'var(--text-secondary)';
+        statusMsg.textContent = 'Conectando con Supabase...';
+      }
+
+      const ok = await SupabaseClient.testConnection(url, key);
+      testBtn.disabled = false;
+      testBtn.textContent = 'Probar Conexión';
+
+      if (statusMsg) {
+        if (ok) {
+          statusMsg.style.color = 'var(--accent-green)';
+          statusMsg.textContent = '¡Conexión exitosa! Las tablas responden correctamente. ✓';
+          Toast.show('Conexión exitosa ✓', 'success');
+        } else {
+          statusMsg.style.color = 'var(--danger)';
+          statusMsg.textContent = 'Error de conexión. Verifica la URL y la Anon Key.';
+          Toast.show('Error de conexión', 'error');
+        }
+      }
+    });
+
+    saveBtn?.addEventListener('click', () => {
+      const url = document.getElementById('settings-db-url')?.value.trim();
+      const key = document.getElementById('settings-db-key')?.value.trim();
+
+      SupabaseClient.setCredentials(url, key);
+      Toast.show('Configuración guardada ✓', 'success');
+      
+      // Reload page to re-initialize supabase client and sync views
+      setTimeout(() => location.reload(), 1000);
+    });
 
     // Export button
     document.getElementById('settings-export-btn')?.addEventListener('click', exportData);

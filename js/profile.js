@@ -84,12 +84,38 @@ const ProfileView = (() => {
   }
 
   // ---- Full render ----
-  function render() {
-    const user = Storage.User.get() || { name: 'Campeón', goal: 'ganar músculo', joinDate: Storage.todayStr() };
-    renderHeader(user);
-    renderStats(user);
-    renderGoalSelector(user);
-    renderNameForm(user);
+  async function render() {
+    const isConnected = SupabaseClient.isConnected();
+    const authSection = document.getElementById('profile-auth-section');
+    const loggedSection = document.getElementById('profile-logged-section');
+    const cloudCard = document.getElementById('profile-cloud-status-card');
+    const cloudInfo = document.getElementById('profile-cloud-sync-info');
+
+    if (!isConnected) {
+      // Local-only mode
+      authSection?.classList.add('hidden');
+      loggedSection?.classList.remove('hidden');
+      cloudCard?.classList.add('hidden');
+    } else {
+      const user = await SupabaseClient.getSessionUser();
+      if (!user) {
+        // Connected but not logged in -> show login form
+        authSection?.classList.remove('hidden');
+        loggedSection?.classList.add('hidden');
+      } else {
+        // Connected and logged in -> show profile + logout card
+        authSection?.classList.add('hidden');
+        loggedSection?.classList.remove('hidden');
+        cloudCard?.classList.remove('hidden');
+        if (cloudInfo) cloudInfo.textContent = `Sesión iniciada con: ${user.email}. Tus datos están sincronizados en la nube.`;
+      }
+    }
+
+    const userObj = Storage.User.get() || { name: 'Campeón', goal: 'ganar músculo', joinDate: Storage.todayStr() };
+    renderHeader(userObj);
+    renderStats(userObj);
+    renderGoalSelector(userObj);
+    renderNameForm(userObj);
   }
 
   // ---- Select goal ----
@@ -126,9 +152,91 @@ const ProfileView = (() => {
 
   // ---- Init ----
   function init() {
+    // Save profile actions
     document.getElementById('profile-save-name-btn')?.addEventListener('click', saveName);
     document.getElementById('profile-name-input')?.addEventListener('keydown', e => {
       if (e.key === 'Enter') saveName();
+    });
+
+    // Toggle login/signup forms
+    document.getElementById('auth-goto-signup')?.addEventListener('click', e => {
+      e.preventDefault();
+      document.getElementById('auth-login-box')?.classList.add('hidden');
+      document.getElementById('auth-signup-box')?.classList.remove('hidden');
+    });
+
+    document.getElementById('auth-goto-login')?.addEventListener('click', e => {
+      e.preventDefault();
+      document.getElementById('auth-signup-box')?.classList.add('hidden');
+      document.getElementById('auth-login-box')?.classList.remove('hidden');
+    });
+
+    // Login submit
+    document.getElementById('auth-login-submit-btn')?.addEventListener('click', async () => {
+      const email = document.getElementById('auth-login-email')?.value.trim();
+      const pass  = document.getElementById('auth-login-pass')?.value.trim();
+      if (!email || !pass) { Toast.show('Por favor completa todos los campos', 'error'); return; }
+
+      Toast.show('Iniciando sesión...', 'default');
+      try {
+        await SupabaseClient.login(email, pass);
+        const user = await SupabaseClient.getSessionUser();
+        
+        Toast.show('¡Sesión iniciada! Sincronizando...', 'success');
+        
+        // Sincronizar: descargar datos de Supabase a LocalStorage
+        await SupabaseClient.downloadAllCloudToLocal(user.id);
+        
+        // Recargar aplicación
+        location.reload();
+      } catch (err) {
+        Toast.show('Error: ' + err.message, 'error');
+      }
+    });
+
+    // Signup submit
+    document.getElementById('auth-signup-submit-btn')?.addEventListener('click', async () => {
+      const name  = document.getElementById('auth-signup-name')?.value.trim();
+      const email = document.getElementById('auth-signup-email')?.value.trim();
+      const pass  = document.getElementById('auth-signup-pass')?.value.trim();
+      if (!name || !email || !pass) { Toast.show('Por favor completa todos los campos', 'error'); return; }
+      if (pass.length < 6) { Toast.show('La contraseña debe tener al menos 6 caracteres', 'error'); return; }
+
+      Toast.show('Creando cuenta...', 'default');
+      try {
+        const goal = Storage.User.get()?.goal || 'ganar músculo';
+        await SupabaseClient.signUp(email, pass, name, goal);
+        
+        const user = await SupabaseClient.getSessionUser();
+        // Si se crea correctamente, subir el estado local actual (para no perder su progreso)
+        if (user) {
+          await SupabaseClient.uploadAllLocalToCloud(user.id);
+        }
+        
+        Toast.show('¡Cuenta creada y sincronizada! Revisa tu correo.', 'success');
+        location.reload();
+      } catch (err) {
+        Toast.show('Error: ' + err.message, 'error');
+      }
+    });
+
+    // Logout button
+    document.getElementById('profile-logout-btn')?.addEventListener('click', async () => {
+      if (confirm('¿Cerrar sesión? Los datos locales se limpiarán.')) {
+        await SupabaseClient.logout();
+        Storage.resetAll(); // Clear local cache to prevent data overlap
+        location.reload();
+      }
+    });
+
+    // Force Sync button
+    document.getElementById('profile-cloud-sync-btn')?.addEventListener('click', async () => {
+      const user = await SupabaseClient.getSessionUser();
+      if (!user) return;
+      Toast.show('Subiendo datos locales a la nube...', 'default');
+      await SupabaseClient.uploadAllLocalToCloud(user.id);
+      Toast.show('¡Sincronización completada! ☁️', 'success');
+      render();
     });
   }
 
