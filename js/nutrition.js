@@ -40,11 +40,11 @@ const NutritionView = (() => {
     const plate = Storage.Plate.get();
     const keys = ['protein', 'carb', 'veggies', 'fruit', 'water'];
     const labels = {
-      protein: { emoji: '🥩', label: 'Proteína' },
-      carb:    { emoji: '🌾', label: 'Carbohidrato' },
-      veggies: { emoji: '🥦', label: 'Verduras' },
-      fruit:   { emoji: '🍎', label: 'Fruta' },
-      water:   { emoji: '💧', label: 'Agua' },
+      protein: { emoji: '🥩', labelKey: 'nutri_item_prot' },
+      carb:    { emoji: '🌾', labelKey: 'nutri_item_carb' },
+      veggies: { emoji: '🥦', labelKey: 'nutri_item_veg' },
+      fruit:   { emoji: '🍎', labelKey: 'nutri_item_fruit' },
+      water:   { emoji: '💧', labelKey: 'nutri_item_water' },
     };
 
     // Update hidden checkboxes (for backward compat)
@@ -60,11 +60,12 @@ const NutritionView = (() => {
         const checked = plate[key] || false;
         const color   = NUTRIENT_COLORS[key];
         const info    = labels[key];
+        const translatedLabel = t(info.labelKey);
         return `
           <div class="plate-bar-item" onclick="NutritionView.togglePlateItem('${key}')">
             <div class="plate-bar-label ${checked ? 'checked' : ''}">
               <span class="plate-bar-emoji">${info.emoji}</span>
-              <span>${info.label}</span>
+              <span>${translatedLabel}</span>
             </div>
             <div class="plate-bar-track">
               <div class="plate-bar-fill ${checked ? 'active' : ''}" style="background:${color}"></div>
@@ -79,15 +80,25 @@ const NutritionView = (() => {
     const msgEl   = document.getElementById('plate-message');
     const scoreEl = document.getElementById('plate-score-badge');
 
-    if (msgEl)   msgEl.textContent = PLATE_MESSAGES[count] || PLATE_MESSAGES[0];
+    // Simple translated status texts
+    const countMessages = {
+      5: `🌟 ${t('nutri_score_exc')}!`,
+      4: `💪 ${t('nutri_score_good')}`,
+      3: `👍 ${t('nutri_score_fair')}`,
+      2: `⚠️ ${t('nutri_score_poor')}`,
+      1: `💡 ${t('nutri_score_poor')}`,
+      0: t('nutri_meals_empty')
+    };
+
+    if (msgEl) msgEl.textContent = countMessages[count] || countMessages[0];
 
     // Score badge
     if (scoreEl) {
       scoreEl.className = 'plate-score-badge';
-      if (count === 5)     { scoreEl.textContent = '⭐ Excelente';  scoreEl.classList.add('excellent'); }
-      else if (count >= 4) { scoreEl.textContent = '✅ Muy bien';   scoreEl.classList.add('good'); }
-      else if (count >= 3) { scoreEl.textContent = '👍 Bien';       scoreEl.classList.add('fair'); }
-      else if (count >= 1) { scoreEl.textContent = '⚠️ Mejorar';   scoreEl.classList.add('poor'); }
+      if (count === 5)     { scoreEl.textContent = `⭐ ${t('nutri_score_exc')}`;  scoreEl.classList.add('excellent'); }
+      else if (count >= 4) { scoreEl.textContent = `✅ ${t('nutri_score_good')}`;   scoreEl.classList.add('good'); }
+      else if (count >= 3) { scoreEl.textContent = `👍 ${t('nutri_score_fair')}`;       scoreEl.classList.add('fair'); }
+      else if (count >= 1) { scoreEl.textContent = `⚠️ ${t('nutri_score_poor')}`;   scoreEl.classList.add('poor'); }
       else                 { scoreEl.textContent = '—'; }
     }
   }

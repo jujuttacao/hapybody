@@ -17,6 +17,10 @@ const SettingsView = (() => {
     if (urlEl) urlEl.value = creds.url;
     if (keyEl) keyEl.value = creds.key;
 
+    // Load active language
+    const langSelect = document.getElementById('settings-lang-select');
+    if (langSelect) langSelect.value = I18n.getLanguage();
+
     // Reset status message
     const msgEl = document.getElementById('settings-db-status-msg');
     if (msgEl) msgEl.style.display = 'none';
@@ -56,6 +60,15 @@ const SettingsView = (() => {
         const next = Storage.Theme.toggle();
         ThemeManager.apply(next);
         Toast.show(next === 'dark' ? 'Modo oscuro activado 🌙' : 'Modo claro activado ☀️', 'default', 1800);
+      });
+    }
+
+    // Language select in settings
+    const langSelect = document.getElementById('settings-lang-select');
+    if (langSelect) {
+      langSelect.addEventListener('change', (e) => {
+        I18n.setLanguage(e.target.value);
+        Toast.show(t('toast_save_success'), 'success');
       });
     }
 

@@ -198,6 +198,43 @@ function initOnboarding() {
   if (!user) {
     overlay.classList.remove('hidden');
 
+    // Onboarding step 1 "Next" navigation
+    const nextBtn = document.getElementById('onboarding-next-btn');
+    if (nextBtn) {
+      nextBtn.addEventListener('click', () => {
+        document.getElementById('onboard-step-1').classList.add('hidden');
+        document.getElementById('onboard-step-2').classList.remove('hidden');
+      });
+    }
+
+    // Onboarding step 1 "Log In" direct redirect
+    const loginLink = document.getElementById('onboarding-login-link');
+    if (loginLink) {
+      loginLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        overlay.classList.add('hidden');
+        Router.navigate('profile');
+      });
+    }
+
+    // Language selector change
+    const langSelect = document.getElementById('onboard-lang-select');
+    if (langSelect) {
+      langSelect.value = I18n.getLanguage();
+      langSelect.addEventListener('change', (e) => {
+        I18n.setLanguage(e.target.value);
+      });
+    }
+
+    // Theme selector change
+    const themeSelect = document.getElementById('onboard-theme-select');
+    if (themeSelect) {
+      themeSelect.value = Storage.Theme.get();
+      themeSelect.addEventListener('change', (e) => {
+        ThemeManager.apply(e.target.value);
+      });
+    }
+
     // Goal card selection
     let selectedGoal = 'ganar músculo';
     document.querySelectorAll('.goal-card').forEach(card => {
@@ -208,16 +245,22 @@ function initOnboarding() {
       });
     });
 
-    // Submit
+    // Submit onboarding
     document.getElementById('onboarding-submit-btn').addEventListener('click', () => {
       const nameInput = document.getElementById('user-name-input');
       const name = nameInput.value.trim() || 'Campeón';
+      const lang = langSelect ? langSelect.value : 'es';
+      const theme = themeSelect ? themeSelect.value : 'dark';
+
+      Storage.Theme.set(theme);
+      I18n.setLanguage(lang);
       Storage.User.set({ name, goal: selectedGoal, joinDate: Storage.todayStr() });
+
       overlay.classList.add('hidden');
       // Update sidebar user info
       updateSidebarUser();
       DashboardView.render();
-      Toast.show(`¡Bienvenido, ${name}! 💪`, 'success');
+      Toast.show(`${t('dash_hello')}, ${name}! 💪`, 'success');
     });
 
     document.getElementById('user-name-input').addEventListener('keydown', e => {
@@ -296,6 +339,11 @@ function formatTime(timeStr) {
 // APP INIT
 // ======================================================
 function initApp() {
+  // 0. Inicializar traducción
+  if (window.I18n) {
+    I18n.init();
+  }
+
   // 1. Sincronización asíncrona en segundo plano si está conectado a Supabase
   if (window.SupabaseClient && SupabaseClient.isConnected()) {
     SupabaseClient.getSessionUser().then(user => {

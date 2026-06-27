@@ -22,14 +22,25 @@ const DashboardView = (() => {
 
   // ---- Goal data ----
   const GOAL_DATA = {
-    'ganar músculo':       { icon: '💪', msg: 'Enfócate en proteína y peso progresivo hoy.' },
-    'perder grasa':        { icon: '🔥', msg: 'Déficit calórico + cardio. ¡Hoy quemas más!' },
-    'mantener peso':       { icon: '⚖️', msg: 'Equilibrio es clave. Come bien y muévete.' },
-    'mejorar hábitos':     { icon: '✅', msg: 'Un hábito a la vez cambia todo. Tú puedes.' },
-    'tener más energía':   { icon: '⚡', msg: 'Hidratación + sueño + movimiento = energía.' },
-    'mejorar condición':   { icon: '🏃', msg: 'Cardio progresivo. ¡Supérate cada día!' },
-    'mantenerme saludable':{ icon: '🌿', msg: 'Salud es riqueza. Cada elección importa.' },
-    'definir mi cuerpo':   { icon: '⚡', msg: 'Déficit + proteína + entrenamiento = definición.' },
+    'ganar músculo':       { icon: '💪', msg: 'Proteína y peso progresivo hoy.' },
+    'perder grasa':        { icon: '🔥', msg: 'Déficit calórico + cardio.' },
+    'mantener peso':       { icon: '⚖️', msg: 'Equilibrio es clave.' },
+    'mejorar hábitos':     { icon: '✅', msg: 'Un hábito a la vez.' },
+    'tener más energía':   { icon: '⚡', msg: 'Hidratación + sueño.' },
+    'mejorar condición':   { icon: '🏃', msg: 'Cardio progresivo.' },
+    'mantenerme saludable':{ icon: '🌿', msg: 'Salud es riqueza.' },
+    'definir mi cuerpo':   { icon: '⚡', msg: 'Déficit + proteína.' },
+  };
+
+  const GOAL_KEYS = {
+    'ganar músculo':       'goal_muscle',
+    'perder grasa':        'goal_fat',
+    'mantener peso':       'goal_weight',
+    'mejorar hábitos':     'goal_habits',
+    'tener más energía':   'goal_energy',
+    'mejorar condición':   'goal_condition',
+    'mantenerme saludable':'goal_healthy',
+    'definir mi cuerpo':   'goal_define'
   };
 
   let quoteIndex = Math.floor(Math.random() * QUOTES.length);
@@ -37,9 +48,8 @@ const DashboardView = (() => {
   // ---- Greeting by time ----
   function getGreeting(name) {
     const h = new Date().getHours();
-    if (h < 12) return `¡Buenos días, ${name}! ☀️`;
-    if (h < 18) return `¡Buenas tardes, ${name}! ⚡`;
-    return `¡Buenas noches, ${name}! 🌙`;
+    const timeGreeting = h < 12 ? '☀️' : (h < 18 ? '⚡' : '🌙');
+    return `${t('dash_hello')}, ${name}! ${timeGreeting}`;
   }
 
   // ---- Daily progress calculation ----
@@ -86,17 +96,53 @@ const DashboardView = (() => {
     if (!bannerEl) return;
 
     const goal = user.goal || 'ganar músculo';
-    const data = GOAL_DATA[goal] || { icon: '🎯', msg: 'Sigue tus metas hoy.' };
+    const data = GOAL_DATA[goal] || { icon: '🎯', msg: 'Sigue tus metas.' };
+    const goalKey = GOAL_KEYS[goal] || 'goal_muscle';
 
     bannerEl.innerHTML = `
       <div class="goal-banner-icon">${data.icon}</div>
       <div class="goal-banner-info">
-        <div class="goal-banner-label">Mi objetivo</div>
-        <div class="goal-banner-title">${capitalizeFirst(goal)}</div>
+        <div class="goal-banner-label">${t('prof_goal_title')}</div>
+        <div class="goal-banner-title">${t(goalKey)}</div>
         <div class="goal-banner-msg">${data.msg}</div>
       </div>
     `;
   }
+
+  const habitNames = {
+    es: {
+      water: 'Tomé agua',
+      training: 'Entrené hoy',
+      sleep: 'Dormí bien',
+      food: 'Comí saludable',
+      supps: 'Tomé suplemento',
+      stretch: 'Estiramientos'
+    },
+    en: {
+      water: 'Drank water',
+      training: 'Worked out today',
+      sleep: 'Slept well',
+      food: 'Ate healthy',
+      supps: 'Took supplements',
+      stretch: 'Stretched'
+    },
+    de: {
+      water: 'Wasser getrunken',
+      training: 'Trainiert heute',
+      sleep: 'Gut geschlafen',
+      food: 'Gesund gegessen',
+      supps: 'Präparat genommen',
+      stretch: 'Gedehnt'
+    },
+    zh: {
+      water: '今日饮水',
+      training: '今日训练',
+      sleep: '睡眠充足',
+      food: '健康饮食',
+      supps: '服用补剂',
+      stretch: '拉伸放松'
+    }
+  };
 
   // ---- Render today's training quick view ----
   function renderTodayTraining() {
@@ -106,8 +152,7 @@ const DashboardView = (() => {
 
     if (exercises.length === 0) {
       container.innerHTML = `<div class="empty-state-small">
-        <span>No tienes ejercicios para hoy.</span>
-        <button class="btn-link" data-view-target="training">+ Agregar</button>
+        <span>${t('dash_training_empty')}</span>
       </div>`;
       return;
     }
@@ -142,7 +187,7 @@ const DashboardView = (() => {
     ];
 
     if (all.length === 0) {
-      container.innerHTML = `<div class="empty-state-small"><span>¡Todo al día! 🎉</span></div>`;
+      container.innerHTML = `<div class="empty-state-small"><span>${t('dash_supps_empty')}</span></div>`;
       return;
     }
 
@@ -156,7 +201,7 @@ const DashboardView = (() => {
             ${item.dose ? `<span class="meta-chip">${escapeHtml(item.dose)}</span>` : ''}
           </div>
         </div>
-        <span class="badge badge-pending">pendiente</span>
+        <span class="badge badge-pending">${t('supps_status_pending')}</span>
       </div>
     `).join('');
   }
@@ -167,14 +212,20 @@ const DashboardView = (() => {
     if (!container) return;
 
     const habits = Storage.Habits.get();
-    container.innerHTML = habits.map(h => `
-      <div class="goal-check-item ${h.done ? 'done' : ''}"
-           onclick="DashboardView.toggleHabitFromDash('${h.id}')">
-        <div class="goal-check-circle">${h.done ? '✓' : ''}</div>
-        <span class="goal-check-emoji">${h.icon}</span>
-        <span class="goal-check-label">${h.name}</span>
-      </div>
-    `).join('');
+    const currentLang = I18n.getLanguage();
+    const trans = habitNames[currentLang] || habitNames['es'];
+
+    container.innerHTML = habits.map(h => {
+      const translatedName = trans[h.id] || h.name;
+      return `
+        <div class="goal-check-item ${h.done ? 'done' : ''}"
+             onclick="DashboardView.toggleHabitFromDash('${h.id}')">
+          <div class="goal-check-circle">${h.done ? '✓' : ''}</div>
+          <span class="goal-check-emoji">${h.icon}</span>
+          <span class="goal-check-label">${translatedName}</span>
+        </div>
+      `;
+    }).join('');
   }
 
   // ---- Main render ----
@@ -210,8 +261,16 @@ const DashboardView = (() => {
     const completedEx = todayEx.filter(e => e.completed).length;
     const trainVal = document.getElementById('dash-training-value');
     const trainSub = document.getElementById('dash-training-sub');
-    if (trainVal) trainVal.textContent = todayEx.length > 0 ? `${completedEx}/${todayEx.length} ejercicios` : 'Sin rutina';
-    if (trainSub) trainSub.textContent = todayEx.length > 0 ? (todayEx[0].muscleGroup || 'Entrenamiento') : 'Agrega ejercicios para hoy';
+    if (trainVal) {
+      trainVal.textContent = todayEx.length > 0 
+        ? `${completedEx}/${todayEx.length} ${t('nav_training').toLowerCase()}` 
+        : t('dash_training_empty');
+    }
+    if (trainSub) {
+      trainSub.textContent = todayEx.length > 0 
+        ? (todayEx[0].muscleGroup || t('nav_training')) 
+        : t('dash_training_go');
+    }
 
     // Water card
     const water    = Storage.Water.get();
@@ -225,23 +284,35 @@ const DashboardView = (() => {
     const pendingSupps = supps.filter(s => !s.taken).length;
     const suppVal = document.getElementById('dash-supp-value');
     const suppSub = document.getElementById('dash-supp-sub');
-    if (suppVal) suppVal.textContent = `${pendingSupps} pendiente${pendingSupps !== 1 ? 's' : ''}`;
-    if (suppSub) suppSub.textContent = pendingSupps === 0 ? '¡Todo al día! ✓' : `${supps.filter(s => s.taken).length} tomados`;
+    if (suppVal) {
+      suppVal.textContent = `${pendingSupps} ${t('supps_status_pending').toLowerCase()}`;
+    }
+    if (suppSub) {
+      suppSub.textContent = pendingSupps === 0 ? '✓' : `${supps.filter(s => s.taken).length} ${t('supps_status_taken').toLowerCase()}`;
+    }
 
     // Medications card
     const meds       = Storage.Medications.getAll();
     const pendingMeds = meds.filter(m => !m.taken).length;
     const medVal = document.getElementById('dash-med-value');
     const medSub = document.getElementById('dash-med-sub');
-    if (medVal) medVal.textContent = `${pendingMeds} pendiente${pendingMeds !== 1 ? 's' : ''}`;
-    if (medSub) medSub.textContent = meds.length === 0 ? 'Sin registros' : `${meds.filter(m => m.taken).length} tomados`;
+    if (medVal) {
+      medVal.textContent = `${pendingMeds} ${t('supps_status_pending').toLowerCase()}`;
+    }
+    if (medSub) {
+      medSub.textContent = meds.length === 0 ? '—' : `${meds.filter(m => m.taken).length} ${t('supps_status_taken').toLowerCase()}`;
+    }
 
     // Nutrition card
     const meals    = Storage.Meals.getToday();
     const nutriVal = document.getElementById('dash-nutri-value');
     const nutriSub = document.getElementById('dash-nutri-sub');
-    if (nutriVal) nutriVal.textContent = `${meals.length} comida${meals.length !== 1 ? 's' : ''}`;
-    if (nutriSub) nutriSub.textContent = meals.length === 0 ? 'Sin registros hoy' : 'Registradas hoy';
+    if (nutriVal) {
+      nutriVal.textContent = `${meals.length} ${t('nav_nutrition').toLowerCase()}`;
+    }
+    if (nutriSub) {
+      nutriSub.textContent = meals.length === 0 ? '—' : t('nutri_meals_title');
+    }
 
     // Habits card
     const habits    = Storage.Habits.get();
@@ -249,7 +320,9 @@ const DashboardView = (() => {
     const habitsVal = document.getElementById('dash-habits-value');
     const habitsSub = document.getElementById('dash-habits-sub');
     if (habitsVal) habitsVal.textContent = `${doneHabits}/6`;
-    if (habitsSub) habitsSub.textContent = doneHabits === 6 ? '¡Día perfecto! 🌟' : 'Completados hoy';
+    if (habitsSub) {
+      habitsSub.textContent = doneHabits === 6 ? '🏆' : t('onboard_label_goal').toLowerCase();
+    }
 
     // Sub-sections
     renderTodayTraining();

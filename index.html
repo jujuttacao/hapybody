@@ -34,61 +34,120 @@
   <!-- ===== ONBOARDING OVERLAY ===== -->
   <div id="onboarding-overlay" class="onboarding-overlay hidden">
     <div class="onboarding-card">
-      <div class="onboarding-logo">
-        <div class="onboarding-logo-icon">⚡</div>
-        <span class="onboarding-logo-text">HapyBody<span class="logo-plus">+</span></span>
-      </div>
-      <h2 class="onboarding-title">¡Bienvenido a tu asistente fitness!</h2>
-      <p class="onboarding-sub">Cuéntanos quién eres para personalizar tu experiencia de bienestar.</p>
-
-      <div class="onboarding-form">
-        <div class="form-group">
-          <label for="user-name-input">¿Cómo te llamas?</label>
-          <input type="text" id="user-name-input" placeholder="Ej: Carlos, Ana, Campeón..." maxlength="30" autocomplete="off" />
-        </div>
-
-        <div class="form-group">
-          <label>¿Cuál es tu objetivo principal?</label>
-          <div class="goal-grid">
-            <div class="goal-card selected" data-goal="ganar músculo">
-              <div class="goal-card-icon">💪</div>
-              <div class="goal-card-text">Ganar músculo</div>
-            </div>
-            <div class="goal-card" data-goal="perder grasa">
-              <div class="goal-card-icon">🔥</div>
-              <div class="goal-card-text">Perder grasa</div>
-            </div>
-            <div class="goal-card" data-goal="mantener peso">
-              <div class="goal-card-icon">⚖️</div>
-              <div class="goal-card-text">Mantener peso</div>
-            </div>
-            <div class="goal-card" data-goal="mejorar hábitos">
-              <div class="goal-card-icon">✅</div>
-              <div class="goal-card-text">Mejorar hábitos</div>
-            </div>
-            <div class="goal-card" data-goal="tener más energía">
-              <div class="goal-card-icon">⚡</div>
-              <div class="goal-card-text">Más energía</div>
-            </div>
-            <div class="goal-card" data-goal="mejorar condición">
-              <div class="goal-card-icon">🏃</div>
-              <div class="goal-card-text">Mejor condición</div>
-            </div>
-            <div class="goal-card" data-goal="mantenerme saludable">
-              <div class="goal-card-icon">🌿</div>
-              <div class="goal-card-text">Mantenerme sano</div>
-            </div>
-            <div class="goal-card" data-goal="definir mi cuerpo">
-              <div class="goal-card-icon">⚡</div>
-              <div class="goal-card-text">Definir cuerpo</div>
-            </div>
+      <!-- STEP 1: SPLASH SCREEN -->
+      <div id="onboard-step-1" class="onboard-slide">
+        <div class="onboard-splash-grid">
+          <div class="onboard-grid-item item-1">
+            <span class="grid-icon">🏋️</span>
+            <span class="grid-label" data-i18n="nav_training">Entrenamiento</span>
+          </div>
+          <div class="onboard-grid-item item-2">
+            <span class="grid-icon">🥗</span>
+            <span class="grid-label" data-i18n="nav_nutrition">Nutrición</span>
+          </div>
+          <div class="onboard-grid-item item-3">
+            <span class="grid-icon">💊</span>
+            <span class="grid-label" data-i18n="nav_supplements">Suplementos</span>
+          </div>
+          <div class="onboard-grid-item item-4">
+            <span class="grid-icon">📈</span>
+            <span class="grid-label" data-i18n="nav_progress">Progreso</span>
           </div>
         </div>
 
-        <button id="onboarding-submit-btn" class="btn btn-primary btn-full btn-large">
-          <span>Comenzar mi journey</span>
+        <div class="onboarding-brand" style="text-align: center; margin: 24px 0 12px 0;">
+          <h1 class="onboard-main-title" data-i18n="onboard_main_title" style="font-size: 2.2rem; font-weight: 900; letter-spacing: -0.04em;">Bienvenido a HapyBody+</h1>
+          <p class="onboard-main-desc" data-i18n="onboard_main_desc" style="color: var(--text-secondary); font-size: 0.94rem; margin-top: 8px; line-height: 1.5;">Tu compañero premium de entrenamiento, nutrición y suplementos.</p>
+        </div>
+
+        <button id="onboarding-next-btn" class="btn btn-primary btn-full btn-large" style="margin-top: 14px; border-radius: var(--radius-full); font-weight: 700;">
+          <span data-i18n="onboard_next_btn">Siguiente</span>
           <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
         </button>
+
+        <p style="text-align: center; margin-top: 20px; font-size: 0.84rem; color: var(--text-secondary);">
+          <span data-i18n="onboard_login_prompt">¿Ya tienes una cuenta?</span> 
+          <a href="#" id="onboarding-login-link" style="color: var(--accent-green); font-weight: 700; text-decoration: none; margin-left: 4px;" data-i18n="onboard_login_link">Iniciar Sesión</a>
+        </p>
+      </div>
+
+      <!-- STEP 2: PROFILE CONFIGURATION -->
+      <div id="onboard-step-2" class="onboard-slide hidden">
+        <div class="onboarding-logo" style="margin-bottom: 16px;">
+          <div class="onboarding-logo-icon" style="width: 38px; height: 38px; font-size: 1.2rem;">⚡</div>
+          <span class="onboarding-logo-text" style="font-size: 1.3rem;">HapyBody<span class="logo-plus">+</span></span>
+        </div>
+        <h2 class="onboarding-title" data-i18n="onboard_welcome">¡Bienvenido a tu asistente fitness!</h2>
+        <p class="onboarding-sub" data-i18n="onboard_subtitle">Cuéntanos quién eres para personalizar tu experiencia de bienestar.</p>
+        
+        <div class="onboarding-form">
+          <div class="form-group">
+            <label for="user-name-input" data-i18n="onboard_label_name">¿CÓMO TE LLAMAS?</label>
+            <input type="text" id="user-name-input" data-i18n-placeholder="onboard_placeholder_name" placeholder="Ej: Carlos, Ana..." maxlength="30" autocomplete="off" />
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+            <div class="form-group">
+              <label for="onboard-lang-select" data-i18n="onboard_label_lang">¿IDIOMA PREFERIDO?</label>
+              <select id="onboard-lang-select" style="padding: 10px; border-radius: var(--radius-md); background: var(--bg-elevated); border: 1px solid var(--border); color: var(--text-primary); cursor: pointer;">
+                <option value="es">Español</option>
+                <option value="en">English</option>
+                <option value="de">Deutsch</option>
+                <option value="zh">中文</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="onboard-theme-select" data-i18n="onboard_label_theme">¿APARIENCIA PREFERIDA?</label>
+              <select id="onboard-theme-select" style="padding: 10px; border-radius: var(--radius-md); background: var(--bg-elevated); border: 1px solid var(--border); color: var(--text-primary); cursor: pointer;">
+                <option value="dark" data-i18n="onboard_theme_dark">Modo Oscuro</option>
+                <option value="light" data-i18n="onboard_theme_light">Modo Claro</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label data-i18n="onboard_label_goal">¿CUÁL ES TU OBJETIVO PRINCIPAL?</label>
+            <div class="goal-grid">
+              <div class="goal-card selected" data-goal="ganar músculo">
+                <div class="goal-card-icon">💪</div>
+                <div class="goal-card-text" data-i18n="goal_muscle">Ganar músculo</div>
+              </div>
+              <div class="goal-card" data-goal="perder grasa">
+                <div class="goal-card-icon">🔥</div>
+                <div class="goal-card-text" data-i18n="goal_fat">Perder grasa</div>
+              </div>
+              <div class="goal-card" data-goal="mantener peso">
+                <div class="goal-card-icon">⚖️</div>
+                <div class="goal-card-text" data-i18n="goal_weight">Mantener peso</div>
+              </div>
+              <div class="goal-card" data-goal="mejorar hábitos">
+                <div class="goal-card-icon">✅</div>
+                <div class="goal-card-text" data-i18n="goal_habits">Mejorar hábitos</div>
+              </div>
+              <div class="goal-card" data-goal="tener más energía">
+                <div class="goal-card-icon">⚡</div>
+                <div class="goal-card-text" data-i18n="goal_energy">Más energía</div>
+              </div>
+              <div class="goal-card" data-goal="mejorar condición">
+                <div class="goal-card-icon">🏃</div>
+                <div class="goal-card-text" data-i18n="goal_condition">Mejor condición</div>
+              </div>
+              <div class="goal-card" data-goal="mantenerme saludable">
+                <div class="goal-card-icon">🌿</div>
+                <div class="goal-card-text" data-i18n="goal_healthy">Mantenerme sano</div>
+              </div>
+              <div class="goal-card" data-goal="definir mi cuerpo">
+                <div class="goal-card-icon">⚡</div>
+                <div class="goal-card-text" data-i18n="goal_define">Definir cuerpo</div>
+              </div>
+            </div>
+          </div>
+
+          <button id="onboarding-submit-btn" class="btn btn-primary btn-full btn-large">
+            <span data-i18n="onboard_btn_start">Comenzar</span>
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -119,60 +178,59 @@
 
       <!-- Navigation -->
       <nav class="sidebar-nav" role="navigation" aria-label="Navegación principal">
-
-        <div class="nav-section-label">Principal</div>
+        <div class="nav-section-label" data-i18n="nav_section_main">Principal</div>
 
         <a href="#" class="nav-item active" data-view="dashboard" id="nav-dashboard" aria-label="Panel">
           <div class="nav-item-icon">
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
           </div>
-          <span>Panel</span>
+          <span data-i18n="nav_dashboard">Panel</span>
         </a>
 
         <a href="#" class="nav-item" data-view="training" id="nav-training" aria-label="Entrenamiento">
           <div class="nav-item-icon">
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 6.5h11"/><path d="M6.5 17.5h11"/><path d="M3 10h3v4H3z"/><path d="M18 10h3v4h-3z"/><path d="M6.5 10v4"/><path d="M17.5 10v4"/></svg>
           </div>
-          <span>Entrenamiento</span>
+          <span data-i18n="nav_training">Entrenamiento</span>
         </a>
 
         <a href="#" class="nav-item" data-view="nutrition" id="nav-nutrition" aria-label="Alimentación">
           <div class="nav-item-icon">
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 1 0 10 10 10 10 0 0 0-10-10zm0 18a8 8 0 1 1 8-8 8 8 0 0 1-8 8z"/><path d="M12 6v6l4 2"/></svg>
           </div>
-          <span>Alimentación</span>
+          <span data-i18n="nav_nutrition">Alimentación</span>
         </a>
 
         <a href="#" class="nav-item" data-view="progress" id="nav-progress" aria-label="Progreso">
           <div class="nav-item-icon">
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z"/></svg>
           </div>
-          <span>Progreso</span>
+          <span data-i18n="nav_progress">Progreso</span>
         </a>
 
-        <div class="nav-section-label" style="margin-top:8px">Salud</div>
+        <div class="nav-section-label" style="margin-top:8px" data-i18n="nav_section_track">Salud</div>
 
         <a href="#" class="nav-item" data-view="supplements" id="nav-supplements" aria-label="Suplementos">
           <div class="nav-item-icon">
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z"/><path d="m8.5 8.5 7 7"/></svg>
           </div>
-          <span>Suplementos</span>
+          <span data-i18n="nav_supplements">Suplementos</span>
         </a>
 
-        <div class="nav-section-label" style="margin-top:8px">Cuenta</div>
+        <div class="nav-section-label" style="margin-top:8px" data-i18n="nav_section_user">Cuenta</div>
 
         <a href="#" class="nav-item" data-view="profile" id="nav-profile" aria-label="Perfil">
           <div class="nav-item-icon">
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
           </div>
-          <span>Perfil</span>
+          <span data-i18n="nav_profile">Perfil</span>
         </a>
 
         <a href="#" class="nav-item" data-view="settings" id="nav-settings" aria-label="Configuración">
           <div class="nav-item-icon">
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
           </div>
-          <span>Configuración</span>
+          <span data-i18n="nav_settings">Configuración</span>
         </a>
       </nav>
 
@@ -180,7 +238,7 @@
       <div class="sidebar-footer">
         <button id="reset-day-btn" class="btn-ghost btn-small" title="Reiniciar día">
           <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
-          <span>Reiniciar día</span>
+          <span data-i18n="nav_reset_day">Reiniciar día</span>
         </button>
       </div>
     </aside>
@@ -240,7 +298,7 @@
               <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 6.5h11"/><path d="M6.5 17.5h11"/><path d="M3 10h3v4H3z"/><path d="M18 10h3v4h-3z"/><path d="M6.5 10v4"/><path d="M17.5 10v4"/></svg>
             </div>
             <div class="summary-card-content">
-              <span class="summary-card-label">Entrenamiento</span>
+              <span class="summary-card-label" data-i18n="nav_training">Entrenamiento</span>
               <span class="summary-card-value" id="dash-training-value">—</span>
               <span class="summary-card-sub" id="dash-training-sub">Sin rutina hoy</span>
             </div>
@@ -253,7 +311,7 @@
               <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z"/></svg>
             </div>
             <div class="summary-card-content">
-              <span class="summary-card-label">Agua</span>
+              <span class="summary-card-label" data-i18n="dash_water_title">Agua</span>
               <span class="summary-card-value" id="dash-water-value">0/8</span>
               <div class="mini-water-track">
                 <div class="mini-water-fill" id="dash-water-bar" style="width:0%"></div>
@@ -270,7 +328,7 @@
               <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z"/><path d="m8.5 8.5 7 7"/></svg>
             </div>
             <div class="summary-card-content">
-              <span class="summary-card-label">Suplementos</span>
+              <span class="summary-card-label" data-i18n="nav_supplements">Suplementos</span>
               <span class="summary-card-value" id="dash-supp-value">0 pendientes</span>
               <span class="summary-card-sub" id="dash-supp-sub">Todo al día</span>
             </div>
@@ -283,7 +341,7 @@
               <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
             </div>
             <div class="summary-card-content">
-              <span class="summary-card-label">Medicamentos</span>
+              <span class="summary-card-label" data-i18n="supps_cat_med">Medicamentos</span>
               <span class="summary-card-value" id="dash-med-value">0 pendientes</span>
               <span class="summary-card-sub" id="dash-med-sub">Sin registros</span>
             </div>
@@ -296,7 +354,7 @@
               <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 12H3"/><path d="M16 6H3"/><path d="M16 18H3"/><path d="M18 9v6"/><path d="M21 12h-6"/></svg>
             </div>
             <div class="summary-card-content">
-              <span class="summary-card-label">Alimentación</span>
+              <span class="summary-card-label" data-i18n="nav_nutrition">Alimentación</span>
               <span class="summary-card-value" id="dash-nutri-value">0 comidas</span>
               <span class="summary-card-sub" id="dash-nutri-sub">Sin registros hoy</span>
             </div>
@@ -309,7 +367,7 @@
               <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="m9 12 2 2 4-4"/></svg>
             </div>
             <div class="summary-card-content">
-              <span class="summary-card-label">Hábitos</span>
+              <span class="summary-card-label" data-i18n="goal_habits">Hábitos</span>
               <span class="summary-card-value" id="dash-habits-value">0/6</span>
               <span class="summary-card-sub" id="dash-habits-sub">Completados hoy</span>
             </div>
@@ -320,7 +378,7 @@
         <!-- Today's Goals Checklist -->
         <div class="todays-goals-card">
           <div class="section-header">
-            <h2 class="section-title">Mis metas de hoy ✅</h2>
+            <h2 class="section-title" data-i18n="onboard_label_goal">Mis metas de hoy ✅</h2>
           </div>
           <div class="goals-list" id="todays-goals-list">
             <!-- Populated by JS -->
@@ -370,13 +428,13 @@
       <section class="view" id="view-training">
         <div class="view-header">
           <div class="view-header-left">
-            <h1>Entrenamiento 💪</h1>
-            <p class="view-subtitle">Organiza tus rutinas por día de la semana</p>
+            <h1 data-i18n="train_title">Entrenamiento 💪</h1>
+            <p class="view-subtitle" data-i18n="train_sub">Organiza tus rutinas por día de la semana</p>
           </div>
           <div class="view-header-actions">
             <button class="btn btn-primary" id="add-exercise-btn">
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
-              Agregar
+              <span data-i18n="train_btn_add">Agregar</span>
             </button>
           </div>
         </div>
@@ -407,8 +465,8 @@
         <div id="exercise-list" class="exercise-list">
           <div class="empty-state" id="exercise-empty">
             <div class="empty-icon">🏋️</div>
-            <p>No hay ejercicios para este día</p>
-            <button class="btn btn-primary" id="add-exercise-btn-empty">+ Agregar ejercicio</button>
+            <p data-i18n="train_empty">No hay ejercicios para este día</p>
+            <button class="btn btn-primary" id="add-exercise-btn-empty">+ <span data-i18n="train_btn_add">Agregar ejercicio</span></button>
           </div>
         </div>
       </section>
@@ -417,15 +475,15 @@
       <section class="view" id="view-supplements">
         <div class="view-header">
           <div class="view-header-left">
-            <h1>Suplementos &amp; Medicamentos 💊</h1>
-            <p class="view-subtitle">Registra y controla tu toma diaria</p>
+            <h1 data-i18n="supps_title">Suplementos &amp; Medicamentos 💊</h1>
+            <p class="view-subtitle" data-i18n="supps_sub">Registra y controla tu toma diaria</p>
           </div>
         </div>
 
         <!-- Tabs -->
         <div class="view-tabs" id="supp-tabs">
-          <button class="view-tab active" data-tab="supplements-tab" id="tab-supps">💊 Suplementos</button>
-          <button class="view-tab" data-tab="meds-tab" id="tab-meds">🩺 Medicamentos</button>
+          <button class="view-tab active" data-tab="supplements-tab" id="tab-supps">💊 <span data-i18n="nav_supplements">Suplementos</span></button>
+          <button class="view-tab" data-tab="meds-tab" id="tab-meds">🩺 <span data-i18n="supps_cat_med">Medicamentos</span></button>
         </div>
 
         <!-- Supplements Tab -->
@@ -437,14 +495,14 @@
             </div>
             <button class="btn btn-primary btn-small" id="add-supp-btn">
               <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
-              Agregar
+              <span data-i18n="supps_btn_add">Agregar</span>
             </button>
           </div>
           <div id="supp-list" class="supp-list">
             <div class="empty-state" id="supp-empty">
               <div class="empty-icon">💊</div>
-              <p>No tienes suplementos registrados</p>
-              <button class="btn btn-primary" id="add-supp-btn-empty">+ Agregar suplemento</button>
+              <p data-i18n="supps_empty">No tienes suplementos registrados</p>
+              <button class="btn btn-primary" id="add-supp-btn-empty">+ <span data-i18n="supps_btn_add">Agregar suplemento</span></button>
             </div>
           </div>
         </div>
@@ -458,7 +516,7 @@
             </div>
             <button class="btn btn-primary btn-small" id="add-med-btn">
               <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
-              Agregar
+              <span data-i18n="supps_btn_add">Agregar</span>
             </button>
           </div>
           <div class="med-disclaimer">
@@ -479,13 +537,13 @@
       <section class="view" id="view-nutrition">
         <div class="view-header">
           <div class="view-header-left">
-            <h1>Alimentación 🥗</h1>
-            <p class="view-subtitle">Registra tus comidas y evalúa tu plato</p>
+            <h1 data-i18n="nutri_title">Alimentación 🥗</h1>
+            <p class="view-subtitle" data-i18n="nutri_sub">Registra tus comidas y evalúa tu plato</p>
           </div>
           <div class="view-header-actions">
             <button class="btn btn-primary" id="add-meal-btn">
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
-              Agregar
+              <span data-i18n="nutri_btn_add">Agregar</span>
             </button>
           </div>
         </div>
@@ -783,11 +841,11 @@
 
         <!-- Appearance -->
         <div class="settings-section">
-          <div class="settings-section-title">Apariencia</div>
+          <div class="settings-section-title" data-i18n="settings_section_app">Apariencia</div>
           <div class="settings-row">
             <div class="settings-row-info">
-              <div class="settings-row-label">Modo claro</div>
-              <div class="settings-row-desc">Alterna entre tema oscuro y claro</div>
+              <div class="settings-row-label" data-i18n="settings_label_theme">Modo claro</div>
+              <div class="settings-row-desc" data-i18n="settings_desc_theme">Alterna entre tema oscuro y claro</div>
             </div>
             <label class="toggle-switch">
               <input type="checkbox" id="settings-theme-toggle" />
@@ -796,25 +854,42 @@
           </div>
         </div>
 
+        <!-- Idioma / Language -->
+        <div class="settings-section">
+          <div class="settings-section-title" data-i18n="settings_section_lang">Idioma / Language 🌐</div>
+          <div class="settings-row">
+            <div class="settings-row-info">
+              <div class="settings-row-label" data-i18n="settings_label_lang">Seleccionar idioma</div>
+              <div class="settings-row-desc" data-i18n="settings_desc_lang">Configura el idioma de la aplicación</div>
+            </div>
+            <select id="settings-lang-select" style="padding: 8px 12px; border-radius: var(--radius-md); background: var(--bg-elevated); border: 1px solid var(--border); color: var(--text-primary); cursor: pointer; font-size: 0.85rem; font-weight: 500;">
+              <option value="es">Español</option>
+              <option value="en">English</option>
+              <option value="de">Deutsch</option>
+              <option value="zh">中文</option>
+            </select>
+          </div>
+        </div>
+
         <!-- Base de Datos -->
         <div class="settings-section">
-          <div class="settings-section-title">Conexión a Base de Datos (Supabase)</div>
+          <div class="settings-section-title" data-i18n="settings_section_db">Conexión a Base de Datos (Supabase)</div>
           <div class="settings-row" style="flex-direction: column; align-items: stretch; gap: 12px; padding: 18px 20px;">
             <div class="settings-row-info">
-              <div class="settings-row-label">Configurar Supabase</div>
-              <div class="settings-row-desc">Escribe las credenciales de tu proyecto de Supabase para habilitar el inicio de sesión y la sincronización.</div>
+              <div class="settings-row-label" data-i18n="settings_section_db">Configurar Supabase</div>
+              <div class="settings-row-desc" data-i18n="settings_desc_db">Escribe las credenciales de tu proyecto de Supabase para habilitar el inicio de sesión y la sincronización.</div>
             </div>
             <div class="form-group" style="margin-top: 4px;">
-              <label for="settings-db-url">URL de Supabase</label>
+              <label for="settings-db-url" data-i18n="settings_db_url">URL de Supabase</label>
               <input type="url" id="settings-db-url" placeholder="https://xxxx.supabase.co" autocomplete="off" />
             </div>
             <div class="form-group">
-              <label for="settings-db-key">Anon Key de Supabase</label>
+              <label for="settings-db-key" data-i18n="settings_db_key">Anon Key de Supabase</label>
               <input type="password" id="settings-db-key" placeholder="Tu clave anon..." autocomplete="off" />
             </div>
             <div style="display: flex; gap: 8px; justify-content: flex-end; margin-top: 8px;">
-              <button class="btn btn-secondary btn-small" id="settings-db-test-btn">Probar Conexión</button>
-              <button class="btn btn-primary btn-small" id="settings-db-save-btn">Guardar Conexión</button>
+              <button class="btn btn-secondary btn-small" id="settings-db-test-btn" data-i18n="settings_btn_test">Probar Conexión</button>
+              <button class="btn btn-primary btn-small" id="settings-db-save-btn" data-i18n="settings_btn_save">Guardar Conexión</button>
             </div>
             <div id="settings-db-status-msg" style="font-size: 0.8rem; margin-top: 4px; display: none;"></div>
           </div>
@@ -822,35 +897,35 @@
 
         <!-- Día -->
         <div class="settings-section">
-          <div class="settings-section-title">Día actual</div>
+          <div class="settings-section-title" data-i18n="settings_section_reset">Día actual</div>
           <div class="settings-row">
             <div class="settings-row-info">
-              <div class="settings-row-label">Reiniciar progreso del día</div>
-              <div class="settings-row-desc">Agua, hábitos y estado de suplementos</div>
+              <div class="settings-row-label" data-i18n="settings_label_reset">Reiniciar progreso del día</div>
+              <div class="settings-row-desc" data-i18n="settings_desc_reset">Agua, hábitos y estado de suplementos</div>
             </div>
-            <button class="btn btn-ghost btn-small" id="settings-reset-day-btn">Reiniciar</button>
+            <button class="btn btn-ghost btn-small" id="settings-reset-day-btn" data-i18n="settings_btn_reset">Reiniciar</button>
           </div>
         </div>
 
         <!-- Data -->
         <div class="settings-section">
-          <div class="settings-section-title">Datos</div>
+          <div class="settings-section-title" data-i18n="settings_section_data">Datos</div>
           <div class="settings-row">
             <div class="settings-row-info">
-              <div class="settings-row-label">Exportar mis datos</div>
-              <div class="settings-row-desc">Descarga un backup en formato JSON</div>
+              <div class="settings-row-label" data-i18n="settings_label_export">Exportar mis datos</div>
+              <div class="settings-row-desc" data-i18n="settings_desc_export">Descarga un backup en formato JSON</div>
             </div>
             <button class="btn btn-secondary btn-small" id="settings-export-btn">
               <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-              Exportar
+              <span data-i18n="settings_btn_export">Exportar JSON</span>
             </button>
           </div>
           <div class="settings-row">
             <div class="settings-row-info">
-              <div class="settings-row-label">Eliminar todos mis datos</div>
-              <div class="settings-row-desc" style="color:var(--danger)">⚠️ Esta acción no se puede deshacer</div>
+              <div class="settings-row-label" data-i18n="settings_label_clear">Eliminar todos mis datos</div>
+              <div class="settings-row-desc" style="color:var(--danger)" data-i18n="settings_desc_clear">⚠️ Esta acción no se puede deshacer</div>
             </div>
-            <button class="btn btn-danger btn-small" id="settings-reset-btn">Eliminar todo</button>
+            <button class="btn btn-danger btn-small" id="settings-reset-btn" data-i18n="settings_btn_clear">Eliminar todo</button>
           </div>
         </div>
 
@@ -1135,6 +1210,7 @@
   <div class="toast" id="toast" role="alert" aria-live="polite"></div>
 
   <!-- ==================== SCRIPTS ==================== -->
+  <script src="js/i18n.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase.js"></script>
   <script src="js/storage.js"></script>

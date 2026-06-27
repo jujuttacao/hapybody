@@ -1,19 +1,14 @@
-/* =====================================================
-   HapyBody+ — profile.js v2.0
-   Vista de Perfil de Usuario
-   ===================================================== */
-
 const ProfileView = (() => {
   // ---- Goal options ----
   const GOALS = [
-    { id: 'ganar músculo',       icon: '💪', label: 'Ganar músculo' },
-    { id: 'perder grasa',        icon: '🔥', label: 'Perder grasa' },
-    { id: 'mantener peso',       icon: '⚖️', label: 'Mantener peso' },
-    { id: 'mejorar hábitos',     icon: '✅', label: 'Mejorar hábitos' },
-    { id: 'tener más energía',   icon: '⚡', label: 'Más energía' },
-    { id: 'mejorar condición',   icon: '🏃', label: 'Mejor condición' },
-    { id: 'mantenerme saludable',icon: '🌿', label: 'Mantenerme sano' },
-    { id: 'definir mi cuerpo',   icon: '⚡', label: 'Definir mi cuerpo' },
+    { id: 'ganar músculo',       icon: '💪', key: 'goal_muscle' },
+    { id: 'perder grasa',        icon: '🔥', key: 'goal_fat' },
+    { id: 'mantener peso',       icon: '⚖️', key: 'goal_weight' },
+    { id: 'mejorar hábitos',     icon: '✅', key: 'goal_habits' },
+    { id: 'tener más energía',   icon: '⚡', key: 'goal_energy' },
+    { id: 'mejorar condición',   icon: '🏃', key: 'goal_condition' },
+    { id: 'mantenerme saludable',icon: '🌿', key: 'goal_healthy' },
+    { id: 'definir mi cuerpo',   icon: '⚡', key: 'goal_define' },
   ];
 
   // ---- Render profile header ----
@@ -25,14 +20,18 @@ const ProfileView = (() => {
       ? Math.floor((Date.now() - new Date(user.joinDate)) / 86400000) + 1
       : 1;
 
-    const goalObj = GOALS.find(g => g.id === user.goal) || { icon: '🎯', label: user.goal };
+    const goalObj = GOALS.find(g => g.id === user.goal) || { icon: '🎯', key: user.goal };
+    const goalLabel = t(goalObj.key);
+
+    const langLocale = I18n.getLanguage() === 'es' ? 'es-ES' : (I18n.getLanguage() === 'zh' ? 'zh-CN' : (I18n.getLanguage() === 'de' ? 'de-DE' : 'en-US'));
+    const dateStr = new Date(user.joinDate || Date.now()).toLocaleDateString(langLocale, { day: 'numeric', month: 'long', year: 'numeric' });
 
     headerEl.innerHTML = `
       <div class="profile-big-avatar">${user.name.charAt(0).toUpperCase()}</div>
       <div class="profile-header-info">
         <div class="profile-header-name">${escapeHtml(user.name)}</div>
-        <div class="profile-header-date">Activo desde: ${new Date(user.joinDate || Date.now()).toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' })}</div>
-        <div class="profile-header-goal">${goalObj.icon} ${goalObj.label}</div>
+        <div class="profile-header-date">${dateStr}</div>
+        <div class="profile-header-goal">${goalObj.icon} ${goalLabel}</div>
       </div>
     `;
   }
@@ -49,15 +48,15 @@ const ProfileView = (() => {
     container.innerHTML = `
       <div class="profile-stat-card">
         <div class="profile-stat-value" style="color:var(--accent-orange)">🔥 ${streak}</div>
-        <div class="profile-stat-label">Días racha</div>
+        <div class="profile-stat-label">${t('prof_streak_card')}</div>
       </div>
       <div class="profile-stat-card">
         <div class="profile-stat-value" style="color:var(--accent-purple)">${supps}</div>
-        <div class="profile-stat-label">Suplementos</div>
+        <div class="profile-stat-label">${t('prof_supps_card')}</div>
       </div>
       <div class="profile-stat-card">
         <div class="profile-stat-value" style="color:var(--accent-blue)">${progLen}</div>
-        <div class="profile-stat-label">Registros</div>
+        <div class="profile-stat-label">${t('prof_records_card')}</div>
       </div>
     `;
   }
@@ -72,7 +71,7 @@ const ProfileView = (() => {
            onclick="ProfileView.selectGoal('${g.id}')"
            data-goal="${g.id}">
         <div class="profile-goal-icon">${g.icon}</div>
-        <div class="profile-goal-text">${g.label}</div>
+        <div class="profile-goal-text">${t(g.key)}</div>
       </div>
     `).join('');
   }
