@@ -1,172 +1,119 @@
 /* =====================================================
-   HapyBody+ — training.js v2.0
-   Vista de entrenamiento
+   HapyBody+ — training.js v2.0 (Rebuild)
    ===================================================== */
 
 const TrainingView = (() => {
-  const DAYS = ['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado','Domingo'];
+  let activeDayFilter = 'Todos';
 
-  function getTodayDayName() {
-    const map = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
-    return map[new Date().getDay()];
-  }
+  function init() {
+    // Add exercise submit button listener
+    const addBtn = document.getElementById('ex-add-btn');
+    if (addBtn) {
+      addBtn.addEventListener('click', () => {
+        const day = document.getElementById('ex-day').value;
+        const muscleGroup = document.getElementById('ex-muscle').value.trim();
+        const exercise = document.getElementById('ex-name').value.trim();
+        const sets = parseInt(document.getElementById('ex-sets').value) || 4;
+        const reps = parseInt(document.getElementById('ex-reps').value) || 10;
+        const weight = parseFloat(document.getElementById('ex-weight').value) || 0;
 
-  let selectedDay = getTodayDayName();
+        if (!muscleGroup || !exercise) {
+          Toast.show('Por favor completa todos los campos del ejercicio', 'error');
+          return;
+        }
 
-  // ---- Render day tabs with today marker ----
-  function renderDayTabs() {
-    const today = getTodayDayName();
-    document.querySelectorAll('.day-tab').forEach(tab => {
-      const isActive = tab.dataset.day === selectedDay;
-      const isToday  = tab.dataset.day === today;
-      tab.classList.toggle('active', isActive);
-      tab.classList.toggle('today-marker', isToday);
+        Storage.Exercises.add({ day, muscleGroup, exercise, sets, reps, weight });
+        
+        // Clear fields
+        document.getElementById('ex-muscle').value = '';
+        document.getElementById('ex-name').value = '';
+        document.getElementById('ex-weight').value = '0';
+        
+        render();
+        Toast.show('Ejercicio agregado con éxito ✓', 'success');
+      });
+    }
+
+    // Set filter day listeners
+    document.querySelectorAll('.filter-day-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.filter-day-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        activeDayFilter = btn.dataset.day;
+        render();
+      });
     });
   }
 
-  // ---- Render exercises for selected day ----
-  function renderExercises() {
-    const list      = Storage.Exercises.getByDay(selectedDay);
-    const container = document.getElementById('exercise-list');
-    const empty     = document.getElementById('exercise-empty');
-    const dayLabel  = document.getElementById('training-day-label');
-    const dayCount  = document.getElementById('training-day-count');
-    const dayBar    = document.getElementById('training-day-bar');
+  function render() {
+    const container = document.getElementById('training-list-container');
+    if (!container) return;
 
-    if (dayLabel) dayLabel.textContent = selectedDay;
+    let exercises = Storage.Exercises.getAll();
+    
+    // Sort by creation time so newest are displayed clearly, or group by muscle group
+    exercises.sort((a,b) => b.createdAt - a.createdAt);
 
-    if (list.length === 0) {
-      container.innerHTML = '';
-      container.appendChild(empty);
-      empty.style.display = 'flex';
-      if (dayCount) dayCount.textContent = '0/0 completados';
-      if (dayBar)   dayBar.style.width   = '0%';
+    // Apply active day filter
+    if (activeDayFilter !== 'Todos') {
+      exercises = exercises.filter(ex => ex.day === activeDayFilter);
+    }
+
+    if (exercises.length === 0) {
+      container.innerHTML = `
+        <div class="card" style="grid-column:1/-1; text-align:center; padding:40px; color:var(--text-secondary);">
+          <span style="font-size:2.2rem; display:block; margin-bottom:10px;">🏋️</span>
+          <p>No hay ejercicios registrados para esta selección.</p>
+        </div>
+      `;
       return;
     }
 
-    empty.style.display = 'none';
-    const completed = list.filter(e => e.completed).length;
-    if (dayCount) dayCount.textContent = `${completed}/${list.length} completados`;
-    if (dayBar)   dayBar.style.width   = `${Math.round((completed / list.length) * 100)}%`;
-
-    container.innerHTML = list.map(ex => `
-      <div class="exercise-item ${ex.completed ? 'completed' : ''}" id="ex-${ex.id}">
-        <button class="exercise-check ${ex.completed ? 'checked' : ''}"
-                onclick="TrainingView.toggleExercise('${ex.id}')"
-                aria-label="${ex.completed ? 'Desmarcar' : 'Marcar'} ${escapeHtml(ex.exercise)}">
-          ${ex.completed ? '✓' : ''}
-        </button>
-        <div class="exercise-body">
-          <div class="exercise-name">${escapeHtml(ex.exercise)}</div>
-          <div class="exercise-chips">
-            <span class="exercise-chip group-chip">${escapeHtml(ex.muscleGroup)}</span>
-            <span class="exercise-chip">📊 ${ex.sets} × ${ex.reps}</span>
-            ${ex.weight ? `<span class="exercise-chip">⚖️ ${ex.weight} kg</span>` : ''}
+    container.innerHTML = exercises.map(ex => `
+      <div class="card" style="display:flex; flex-direction:column; justify-content:space-between; gap:16px;">
+        <div>
+          <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:10px;">
+            <span style="font-size:0.75rem; background:rgba(56, 189, 248, 0.12); color:var(--accent-blue); padding:4px 10px; border-radius:var(--radius-full); font-weight:700;">${ex.day}</span>
+            <button onclick="TrainingView.deleteExercise('${ex.id}')" style="background:transparent; border:none; color:var(--accent-red); cursor:pointer; font-size:1.1rem; opacity:0.7;" title="Eliminar">✕</button>
           </div>
+          
+          <h4 style="font-size:1.15rem; margin-bottom:4px;">${ex.exercise}</h4>
+          <span style="font-size:0.8rem; color:var(--text-secondary); font-weight:600;">Grupo: ${ex.muscleGroup}</span>
         </div>
-        <button class="exercise-delete" onclick="TrainingView.deleteExercise('${ex.id}')"
-                aria-label="Eliminar ${escapeHtml(ex.exercise)}">
-          <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
-        </button>
+
+        <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid var(--border); padding-top:12px;">
+          <div style="font-size:0.88rem; color:var(--text-secondary);">
+            <strong style="color:var(--text-primary);">${ex.sets}</strong> series × <strong style="color:var(--text-primary);">${ex.reps}</strong> reps
+            ${ex.weight > 0 ? `<br><span style="font-size:0.76rem;">Peso: ${ex.weight} kg</span>` : ''}
+          </div>
+          
+          <button onclick="TrainingView.toggleComplete('${ex.id}')" class="btn ${ex.completed ? 'btn-primary' : 'btn-secondary'}" style="padding:6px 14px; font-size:0.8rem; border-radius:var(--radius-full);">
+            ${ex.completed ? '✓ Completado' : 'Pendiente'}
+          </button>
+        </div>
       </div>
     `).join('');
   }
 
-  function render() {
-    renderDayTabs();
-    renderExercises();
-  }
-
-  // ---- Open modal ----
-  function openModal() {
-    const select = document.getElementById('ex-day');
-    if (select) select.value = selectedDay;
-    const nameEl  = document.getElementById('ex-name');
-    const setsEl  = document.getElementById('ex-sets');
-    const repsEl  = document.getElementById('ex-reps');
-    const weightEl= document.getElementById('ex-weight');
-    if (nameEl)   nameEl.value   = '';
-    if (setsEl)   setsEl.value   = '4';
-    if (repsEl)   repsEl.value   = '10';
-    if (weightEl) weightEl.value = '';
-    Modal.open('exercise-modal');
-  }
-
-  // ---- Save exercise ----
-  function saveExercise() {
-    const nameEl = document.getElementById('ex-name');
-    const name = nameEl ? nameEl.value.trim() : '';
-    if (!name) { Toast.show('Escribe el nombre del ejercicio', 'error'); return; }
-
-    Storage.Exercises.add({
-      day:         document.getElementById('ex-day').value,
-      muscleGroup: document.getElementById('ex-group').value,
-      exercise:    name,
-      sets:        parseInt(document.getElementById('ex-sets').value) || 3,
-      reps:        parseInt(document.getElementById('ex-reps').value) || 10,
-      weight:      parseFloat(document.getElementById('ex-weight').value) || 0,
-    });
-
-    Modal.close('exercise-modal');
-    selectedDay = document.getElementById('ex-day').value;
-    render();
-    DashboardView.render();
-    Toast.show('Ejercicio agregado ✓', 'success');
-  }
-
-  // ---- Toggle exercise completion ----
-  function toggleExercise(id) {
+  function toggleComplete(id) {
     Storage.Exercises.toggleComplete(id);
     render();
-    DashboardView.render();
   }
 
-  // ---- Delete exercise ----
   function deleteExercise(id) {
-    if (!confirm('¿Eliminar este ejercicio?')) return;
-    Storage.Exercises.delete(id);
-    render();
-    DashboardView.render();
-    Toast.show('Ejercicio eliminado', 'default');
-  }
-
-  // ---- Init ----
-  function init() {
-    // Day tab clicks
-    const tabsEl = document.getElementById('day-tabs');
-    if (tabsEl) {
-      tabsEl.addEventListener('click', e => {
-        const tab = e.target.closest('.day-tab');
-        if (tab) { selectedDay = tab.dataset.day; render(); }
-      });
+    if (confirm('¿Seguro que deseas eliminar este ejercicio?')) {
+      Storage.Exercises.delete(id);
+      render();
+      Toast.show('Ejercicio eliminado', 'success');
     }
-
-    // Add exercise buttons
-    const addBtn      = document.getElementById('add-exercise-btn');
-    const addBtnEmpty = document.getElementById('add-exercise-btn-empty');
-    if (addBtn)      addBtn.addEventListener('click', openModal);
-    if (addBtnEmpty) addBtnEmpty.addEventListener('click', openModal);
-
-    // Save
-    const saveBtn = document.getElementById('exercise-modal-save');
-    if (saveBtn) saveBtn.addEventListener('click', saveExercise);
-
-    // Enter key in name field
-    const nameField = document.getElementById('ex-name');
-    if (nameField) nameField.addEventListener('keydown', e => { if (e.key === 'Enter') saveExercise(); });
-
-    // Mark today's tab
-    const today = getTodayDayName();
-    document.querySelectorAll('.day-tab').forEach(tab => {
-      if (tab.dataset.day === today) tab.title = 'Hoy';
-    });
   }
 
-  function escapeHtml(str) {
-    return String(str)
-      .replace(/&/g,'&amp;').replace(/</g,'&lt;')
-      .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-  }
-
-  return { render, init, toggleExercise, deleteExercise };
+  return {
+    init,
+    render,
+    toggleComplete,
+    deleteExercise
+  };
 })();
+
+window.TrainingView = TrainingView;

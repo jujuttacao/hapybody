@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HapyBody+ App — Premium Habits Tracker</title>
+  <link rel="stylesheet" href="css/app.css">
+  <!-- Supabase CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+  <!-- Ambient Glow effect background -->
+  <div class="ambient-glow"></div>
+
+  <!-- ===== ONBOARDING OVERLAY ===== -->
+  <div id="onboarding-overlay" class="onboarding-overlay hidden">
+    <div class="onboarding-card">
+      
+      <!-- STEP 1: WELCOME SPLASH SCREEN -->
+      <div id="onboard-step-1" class="onboard-slide">
+        <!-- Asymmetrical grid layout matching references -->
+        <div class="onboard-splash-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px;">
+          <div style="grid-row: span 2; height: 180px; border-radius: var(--radius-lg); background: linear-gradient(135deg, rgba(0, 240, 122, 0.12) 0%, rgba(0, 240, 122, 0.02) 100%); border: 1px solid rgba(0, 240, 122, 0.2); padding: 16px; display: flex; flex-direction: column; justify-content: space-between;">
+            <span style="font-size: 2.2rem;">🏋️</span>
+            <span style="font-weight: 700; font-size: 0.82rem;" data-i18n="nav_training">Entrenamiento</span>
+          </div>
+          <div style="height: 84px; border-radius: var(--radius-lg); background: linear-gradient(135deg, rgba(56, 189, 248, 0.12) 0%, rgba(56, 189, 248, 0.02) 100%); border: 1px solid rgba(56, 189, 248, 0.2); padding: 14px; display: flex; flex-direction: column; justify-content: space-between;">
+            <span style="font-size: 1.4rem;">🥗</span>
+            <span style="font-weight: 700; font-size: 0.82rem;" data-i18n="nav_nutrition">Nutrición</span>
+          </div>
+          <div style="height: 84px; border-radius: var(--radius-lg); background: linear-gradient(135deg, rgba(251, 146, 60, 0.12) 0%, rgba(251, 146, 60, 0.02) 100%); border: 1px solid rgba(251, 146, 60, 0.2); padding: 14px; display: flex; flex-direction: column; justify-content: space-between;">
+            <span style="font-size: 1.4rem;">💊</span>
+            <span style="font-weight: 700; font-size: 0.82rem;" data-i18n="nav_supplements">Suplementos</span>
+          </div>
+        </div>
+
+        <div style="text-align: center; margin-bottom: 24px;">
+          <h1 style="font-size: 2.2rem; font-weight: 900; letter-spacing: -0.04em;" data-i18n="onboard_main_title">Bienvenido a HapyBody+</h1>
+          <p style="color: var(--text-secondary); font-size: 0.94rem; margin-top: 8px;" data-i18n="onboard_main_desc">Tu compañero premium de entrenamiento, nutrición y suplementos.</p>
+        </div>
+
+        <button id="onboarding-next-btn" class="btn btn-primary btn-full btn-large">
+          <span data-i18n="onboard_next_btn">Siguiente</span>
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+        </button>
+
+        <p style="text-align: center; margin-top: 20px; font-size: 0.86rem; color: var(--text-secondary);">
+          <span data-i18n="onboard_login_prompt">¿Ya tienes cuenta?</span> 
+          <a href="#" id="onboarding-login-link" style="color: var(--accent-green); font-weight: 700; text-decoration: none;" data-i18n="onboard_login_link">Iniciar Sesión</a>
+        </p>
+      </div>
+
+      <!-- STEP 2: PROFILE CONFIGURATION -->
+      <div id="onboard-step-2" class="onboard-slide hidden">
+        <div class="onboarding-logo" style="margin-bottom: 16px;">
+          <div class="onboarding-logo-icon" style="width: 38px; height: 38px; border-radius: var(--radius-md); background: linear-gradient(135deg, var(--accent-green) 0%, var(--accent-blue) 100%); display: flex; align-items: center; justify-content: center; font-size: 1.1rem; color: #000;">⚡</div>
+          <span style="font-size: 1.3rem;">HapyBody<span class="logo-plus">+</span></span>
+        </div>
+        
+        <h2 class="onboarding-title" data-i18n="onboard_welcome">¡Bienvenido a tu asistente fitness!</h2>
+        <p class="onboarding-sub" data-i18n="onboard_subtitle">Cuéntanos quién eres para personalizar tu experiencia de bienestar.</p>
+        
+        <div class="onboarding-form">
+          <div class="form-group">
+            <label for="user-name-input" data-i18n="onboard_label_name">¿CÓMO TE LLAMAS?</label>
+            <input type="text" id="user-name-input" data-i18n-placeholder="onboard_placeholder_name" placeholder="Ej: Carlos, Ana..." maxlength="30" autocomplete="off" />
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 16px;">
+            <div class="form-group">
+              <label for="onboard-lang-select" data-i18n="onboard_label_lang">¿IDIOMA PREFERIDO?</label>
+              <select id="onboard-lang-select">
+                <option value="es">Español</option>
+                <option value="en">English</option>
+                <option value="de">Deutsch</option>
+                <option value="zh">中文</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="onboard-theme-select" data-i18n="onboard_label_theme">¿APARIENCIA PREFERIDA?</label>
+              <select id="onboard-theme-select">
+                <option value="dark" data-i18n="onboard_theme_dark">Modo Oscuro</option>
+                <option value="light" data-i18n="onboard_theme_light">Modo Claro</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 24px;">
+            <label data-i18n="onboard_label_goal">¿CUÁL ES TU OBJETIVO PRINCIPAL?</label>
+            <div class="goal-grid">
+              <div class="goal-card selected" data-goal="ganar músculo">
+                <div class="goal-card-icon">💪</div>
+                <div class="goal-card-text" data-i18n="goal_muscle">Ganar músculo</div>
+              </div>
+              <div class="goal-card" data-goal="perder grasa">
+                <div class="goal-card-icon">🔥</div>
+                <div class="goal-card-text" data-i18n="goal_fat">Perder grasa</div>
+              </div>
+              <div class="goal-card" data-goal="mantener peso">
+                <div class="goal-card-icon">⚖️</div>
+                <div class="goal-card-text" data-i18n="goal_weight">Mantener peso</div>
+              </div>
+              <div class="goal-card" data-goal="mejorar hábitos">
+                <div class="goal-card-icon">✅</div>
+                <div class="goal-card-text" data-i18n="goal_habits">Mejorar hábitos</div>
+              </div>
+            </div>
+          </div>
+
+          <button id="onboarding-submit-btn" class="btn btn-primary btn-full btn-large">
+            <span data-i18n="onboard_btn_start">Comenzar</span>
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ===== APPLICATION LAYOUT WRAPPER ===== -->
+  <div class="app-container">
+
+    <!-- DESKTOP SIDEBAR -->
+    <aside class="sidebar">
+      <div>
+        <div class="sidebar-logo">
+          <div class="logo-icon">⚡</div>
+          <span>HapyBody<span class="logo-plus">+</span></span>
+        </div>
+        <ul class="sidebar-menu">
+          <li><div class="sidebar-item active" data-view="dashboard" data-i18n="nav_dashboard">Panel</div></li>
+          <li><div class="sidebar-item" data-view="training" data-i18n="nav_training">Entrenamientos</div></li>
+          <li><div class="sidebar-item" data-view="supplements" data-i18n="nav_supplements">Suplementos</div></li>
+          <li><div class="sidebar-item" data-view="nutrition" data-i18n="nav_nutrition">Nutrición</div></li>
+          <li><div class="sidebar-item" data-view="progress" data-i18n="nav_progress">Progreso</div></li>
+          <li><div class="sidebar-item" data-view="profile" data-i18n="nav_profile">Perfil</div></li>
+          <li><div class="sidebar-item" data-view="settings" data-i18n="nav_settings">Configuración</div></li>
+        </ul>
+      </div>
+
+      <div class="sidebar-user" id="sidebar-profile-btn">
+        <div class="user-avatar" id="sidebar-user-avatar">C</div>
+        <div class="user-info">
+          <span class="user-name" id="sidebar-user-name">Campeón</span>
+          <span class="user-status" id="sidebar-user-goal">Ganar músculo</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MOBILE FLOATING BOTTOM NAVBAR -->
+    <nav class="mobile-navbar">
+      <div class="mobile-nav-item active" data-view="dashboard" title="Dashboard">🏠</div>
+      <div class="mobile-nav-item" data-view="training" title="Workouts">🏋️</div>
+      <div class="mobile-nav-item" data-view="supplements" title="Supplements">💊</div>
+      <div class="mobile-nav-item" data-view="nutrition" title="Nutrition">🥗</div>
+      <div class="mobile-nav-item" data-view="progress" title="Progress">📈</div>
+      <div class="mobile-nav-item" data-view="profile" title="Profile">👤</div>
+    </nav>
+
+    <!-- MAIN VIEW WRAPPER -->
+    <main class="main-wrapper">
+      
+      <!-- Top header bar -->
+      <header class="app-header">
+        <div class="header-title-wrap">
+          <h2 id="header-title-text" data-i18n="nav_dashboard">Panel</h2>
+          <span class="header-subtitle" id="header-subtitle-date">Hoy, 27 de Junio</span>
+        </div>
+        <div class="header-actions">
+          <button class="btn-icon" id="header-theme-toggle" title="Tema">🌙</button>
+        </div>
+      </header>
+
+      <!-- VIEW PANELS -->
+      <div class="view-container">
+
+        <!-- 1. DASHBOARD PANEL -->
+        <div id="view-dashboard" class="view-panel active">
+          <div class="dash-layout">
+            
+            <div class="dash-main-cards">
+              <!-- Active Streak Card -->
+              <div class="card streak-card">
+                <div class="streak-fire">🔥</div>
+                <div>
+                  <h4 data-i18n="dash_streak_title">Racha Activa</h4>
+                  <div class="streak-count" id="dash-streak-days">0</div>
+                  <span style="font-size:0.86rem;opacity:0.9;" data-i18n="dash_streak_sub">días seguidos</span>
+                </div>
+              </div>
+
+              <!-- Interactive Circular Water Progress -->
+              <div class="card">
+                <h3 style="margin-bottom: 16px;" data-i18n="dash_water_title">Hidratación</h3>
+                <div class="water-container">
+                  <div class="water-ring-wrap">
+                    <svg class="water-ring-svg" width="120" height="120">
+                      <circle class="water-ring-bg" cx="60" cy="60" r="50"></circle>
+                      <circle class="water-ring-bar" id="water-progress-circle" cx="60" cy="60" r="50" stroke-dasharray="314.16" stroke-dashoffset="314.16"></circle>
+                    </svg>
+                    <div class="water-value">
+                      <span id="water-progress-text">0</span>
+                      <span class="water-unit">/ 8</span>
+                    </div>
+                  </div>
+                  <div style="flex-grow:1; display:flex; flex-direction:column; gap:10px;">
+                    <p style="font-size:0.88rem; color:var(--text-secondary);" data-i18n="dash_water_sub">Objetivo: 8 vasos</p>
+                    <button class="btn btn-primary" id="water-add-btn" data-i18n="dash_water_btn">+ Agregar vaso</button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Habits Checklist grid -->
+              <div class="card">
+                <h3 style="margin-bottom:16px;">Habits checklist</h3>
+                <div class="habits-grid" id="dashboard-habits-checklist">
+                  <!-- Generated dynamically in js -->
+                </div>
+              </div>
+            </div>
+
+            <div class="dash-sidebar-cards" style="display:flex; flex-direction:column; gap:24px;">
+              <!-- Today's Training Quickview -->
+              <div class="card">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+                  <h3 data-i18n="dash_training_title">Entrenamiento de hoy</h3>
+                  <a href="#" class="view-redirect-link" data-target-view="training" style="font-size:0.82rem; color:var(--accent-green); text-decoration:none; font-weight:700;" data-i18n="dash_training_go">Ir</a>
+                </div>
+                <div id="dash-today-training-container">
+                  <!-- exercises list loaded dynamically -->
+                </div>
+              </div>
+
+              <!-- Today's Meal Quickview -->
+              <div class="card">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+                  <h3 data-i18n="dash_plate_title">Plato de hoy</h3>
+                  <a href="#" class="view-redirect-link" data-target-view="nutrition" style="font-size:0.82rem; color:var(--accent-green); text-decoration:none; font-weight:700;" data-i18n="dash_plate_sub">Ir</a>
+                </div>
+                <div id="dash-today-meals-container">
+                  <!-- meals loaded dynamically -->
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- 2. TRAINING PANEL -->
+        <div id="view-training" class="view-panel">
+          <div class="card" style="margin-bottom:24px;">
+            <h3 style="margin-bottom:16px;">Añadir Ejercicio</h3>
+            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:14px;">
+              <div class="form-group">
+                <label>Día</label>
+                <select id="ex-day">
+                  <option value="Lunes">Lunes</option>
+                  <option value="Martes">Martes</option>
+                  <option value="Miércoles">Miércoles</option>
+                  <option value="Jueves">Jueves</option>
+                  <option value="Viernes">Viernes</option>
+                  <option value="Sábado">Sábado</option>
+                  <option value="Domingo">Domingo</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Grupo Muscular</label>
+                <input type="text" id="ex-muscle" placeholder="Ej: Pecho, Pierna">
+              </div>
+              <div class="form-group">
+                <label>Ejercicio</label>
+                <input type="text" id="ex-name" placeholder="Ej: Bench Press">
+              </div>
+            </div>
+            <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px; margin-top:10px;">
+              <div class="form-group">
+                <label>Series</label>
+                <input type="number" id="ex-sets" value="4">
+              </div>
+              <div class="form-group">
+                <label>Reps</label>
+                <input type="number" id="ex-reps" value="10">
+              </div>
+              <div class="form-group">
+                <label>Peso (kg)</label>
+                <input type="number" id="ex-weight" value="0">
+              </div>
+            </div>
+            <button class="btn btn-primary" id="ex-add-btn" style="margin-top:16px; width:100%;">Agregar Ejercicio</button>
+          </div>
+
+          <div style="margin-bottom:16px; display:flex; gap:8px; overflow-x:auto; padding-bottom:8px;">
+            <button class="btn btn-secondary filter-day-btn active" data-day="Todos">Todos</button>
+            <button class="btn btn-secondary filter-day-btn" data-day="Lunes">Lunes</button>
+            <button class="btn btn-secondary filter-day-btn" data-day="Martes">Martes</button>
+            <button class="btn btn-secondary filter-day-btn" data-day="Miércoles">Miércoles</button>
+            <button class="btn btn-secondary filter-day-btn" data-day="Jueves">Jueves</button>
+            <button class="btn btn-secondary filter-day-btn" data-day="Viernes">Viernes</button>
+            <button class="btn btn-secondary filter-day-btn" data-day="Sábado">Sábado</button>
+            <button class="btn btn-secondary filter-day-btn" data-day="Domingo">Domingo</button>
+          </div>
+
+          <div id="training-list-container" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:16px;">
+            <!-- list of exercises -->
+          </div>
+        </div>
+
+        <!-- 3. SUPPLEMENTS PANEL -->
+        <div id="view-supplements" class="view-panel">
+          <div class="card" style="margin-bottom:24px;">
+            <h3 style="margin-bottom:16px;">Añadir Suplemento / Medicamento</h3>
+            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:14px;">
+              <div class="form-group">
+                <label>Nombre</label>
+                <input type="text" id="supp-name" placeholder="Ej: Creatina, Omega 3">
+              </div>
+              <div class="form-group">
+                <label>Tipo</label>
+                <select id="supp-type">
+                  <option value="suplemento">Suplemento 💊</option>
+                  <option value="medicamento">Medicamento 🧪</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Dosis / Hora</label>
+                <input type="time" id="supp-hour" value="08:00">
+              </div>
+            </div>
+            <div class="form-group" style="margin-top:10px;">
+              <label>Frecuencia / Nota</label>
+              <input type="text" id="supp-note" placeholder="Ej: 5g con agua después de entrenar">
+            </div>
+            <button class="btn btn-primary" id="supp-add-btn" style="margin-top:16px; width:100%;">Agregar</button>
+          </div>
+
+          <div id="supplements-list-container" style="display:flex; flex-direction:column; gap:12px;">
+            <!-- list of supplements -->
+          </div>
+        </div>
+
+        <!-- 4. NUTRITION PANEL -->
+        <div id="view-nutrition" class="view-panel">
+          
+          <div class="card" style="margin-bottom:24px;">
+            <h3 style="margin-bottom:16px;" data-i18n="dash_plate_title">Plato de hoy</h3>
+            <p style="font-size:0.86rem; color:var(--text-secondary); margin-bottom:18px;">Selecciona los componentes nutricionales que has consumido el día de hoy:</p>
+            <div class="goal-grid" style="grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));">
+              <div class="goal-card" id="plate-protein" data-plate="protein">
+                <div class="goal-card-icon">🍗</div>
+                <div class="goal-card-text">Proteína</div>
+              </div>
+              <div class="goal-card" id="plate-carb" data-plate="carb">
+                <div class="goal-card-icon">🍚</div>
+                <div class="goal-card-text">Carbohidratos</div>
+              </div>
+              <div class="goal-card" id="plate-veggies" data-plate="veggies">
+                <div class="goal-card-icon">🥦</div>
+                <div class="goal-card-text">Verduras</div>
+              </div>
+              <div class="goal-card" id="plate-fruit" data-plate="fruit">
+                <div class="goal-card-icon">🍎</div>
+                <div class="goal-card-text">Fruta</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card" style="margin-bottom:24px;">
+            <h3 style="margin-bottom:16px;">Registrar Alimento</h3>
+            <div style="display:grid; grid-template-columns:2fr 1fr; gap:14px;">
+              <div class="form-group">
+                <label>Descripción</label>
+                <input type="text" id="meal-desc" placeholder="Ej: Pollo con ensalada y arroz">
+              </div>
+              <div class="form-group">
+                <label>Calidad Nutricional</label>
+                <select id="meal-rating">
+                  <option value="alto">Alta 🟢</option>
+                  <option value="medio">Media 🟡</option>
+                  <option value="bajo">Baja 🔴</option>
+                </select>
+              </div>
+            </div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:10px;">
+              <div class="form-group">
+                <label>Categoría</label>
+                <select id="meal-type">
+                  <option value="desayuno">Desayuno</option>
+                  <option value="almuerzo">Almuerzo</option>
+                  <option value="cena">Cena</option>
+                  <option value="snack">Snack</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Hora</label>
+                <input type="time" id="meal-hour" value="13:00">
+              </div>
+            </div>
+            <button class="btn btn-primary" id="meal-add-btn" style="margin-top:16px; width:100%;">Registrar Alimento</button>
+          </div>
+
+          <div id="meals-list-container" style="display:flex; flex-direction:column; gap:12px;">
+            <!-- list of logged meals -->
+          </div>
+        </div>
+
+        <!-- 5. PROGRESS PANEL -->
+        <div id="view-progress" class="view-panel">
+          <div class="card" style="margin-bottom:24px;">
+            <h3 style="margin-bottom:16px;">Registrar Evolución Física</h3>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px;">
+              <div class="form-group">
+                <label>Peso Corporal (kg)</label>
+                <input type="number" step="0.1" id="prog-weight" placeholder="Ej: 72.5">
+              </div>
+              <div class="form-group">
+                <label>Cintura (cm)</label>
+                <input type="number" id="prog-waist" placeholder="Opcional">
+              </div>
+            </div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:10px;">
+              <div class="form-group">
+                <label>Brazo (cm)</label>
+                <input type="number" id="prog-arm" placeholder="Opcional">
+              </div>
+              <div class="form-group">
+                <label>Pecho (cm)</label>
+                <input type="number" id="prog-chest" placeholder="Opcional">
+              </div>
+            </div>
+            <div class="form-group" style="margin-top:10px;">
+              <label>Notas</label>
+              <input type="text" id="prog-note" placeholder="Ej: Me siento con más energía">
+            </div>
+            <button class="btn btn-primary" id="prog-add-btn" style="margin-top:16px; width:100%;">Guardar Registro</button>
+          </div>
+
+          <div class="card">
+            <h3 style="margin-bottom:16px;">Historial de Mediciones</h3>
+            <div style="overflow-x:auto;">
+              <table style="width:100%; border-collapse:collapse; text-align:left; font-size:0.9rem;">
+                <thead>
+                  <tr style="border-bottom:2px solid var(--border); color:var(--text-secondary);">
+                    <th style="padding:12px 8px;">Fecha</th>
+                    <th style="padding:12px 8px;">Peso (kg)</th>
+                    <th style="padding:12px 8px;">Cintura (cm)</th>
+                    <th style="padding:12px 8px;">Brazo (cm)</th>
+                    <th style="padding:12px 8px;">Pecho (cm)</th>
+                    <th style="padding:12px 8px; width:60px;">Acción</th>
+                  </tr>
+                </thead>
+                <tbody id="progress-table-body">
+                  <!-- table rows loaded dynamically -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- 6. PROFILE PANEL (iOS Redesigned) -->
+        <div id="view-profile" class="view-panel">
+          <div class="profile-wrap">
+            
+            <!-- User Info Card Header -->
+            <div class="profile-card-header">
+              <div class="user-avatar" id="profile-user-avatar" style="width:60px; height:60px; font-size:1.6rem;">C</div>
+              <div class="profile-header-info">
+                <div class="profile-header-name" id="profile-user-name">Campeón</div>
+                <div class="profile-header-email" id="profile-user-email">invitado@hapybody.com</div>
+              </div>
+            </div>
+
+            <!-- Group 1: Account -->
+            <div class="settings-group-label" data-i18n="nav_profile">Perfil</div>
+            <div class="settings-box-group">
+              <div class="settings-box-row" id="profile-row-edit">
+                <div class="settings-row-left">
+                  <span class="settings-row-icon">👤</span>
+                  <span>Manage Profile</span>
+                </div>
+                <div class="settings-row-right">
+                  <span class="settings-row-arrow">➔</span>
+                </div>
+              </div>
+              <div class="settings-box-row" id="profile-row-security">
+                <div class="settings-row-left">
+                  <span class="settings-row-icon">🔒</span>
+                  <span>Password & Security</span>
+                </div>
+                <div class="settings-row-right">
+                  <span class="settings-row-arrow">➔</span>
+                </div>
+              </div>
+              <div class="settings-box-row" id="profile-row-lang">
+                <div class="settings-row-left">
+                  <span class="settings-row-icon">🌐</span>
+                  <span>Language</span>
+                </div>
+                <div class="settings-row-right">
+                  <span id="profile-lang-status">Español</span>
+                  <span class="settings-row-arrow">➔</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Group 2: Preferences -->
+            <div class="settings-group-label" data-i18n="settings_section_app">Apariencia</div>
+            <div class="settings-box-group">
+              <div class="settings-box-row" id="profile-row-theme">
+                <div class="settings-row-left">
+                  <span class="settings-row-icon">🌓</span>
+                  <span>Theme</span>
+                </div>
+                <div class="settings-row-right">
+                  <span id="profile-theme-status">Dark</span>
+                  <span class="settings-row-arrow">➔</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Group 3: Database & Cloud Sync -->
+            <div class="settings-group-label">Cloud database</div>
+            <div class="settings-box-group">
+              <div class="settings-box-row" id="profile-row-sync">
+                <div class="settings-row-left">
+                  <span class="settings-row-icon">☁️</span>
+                  <span>Supabase Sync</span>
+                </div>
+                <div class="settings-row-right">
+                  <span id="profile-sync-status">Desconectado</span>
+                  <span class="settings-row-arrow">➔</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Action Button Logout -->
+            <button class="btn btn-secondary btn-full" id="profile-logout-btn" style="margin-top:20px; font-weight:700;">Cerrar sesión</button>
+
+          </div>
+        </div>
+
+        <!-- 7. SETTINGS PANEL -->
+        <div id="view-settings" class="view-panel">
+          <div class="profile-wrap">
+            <div class="card" style="margin-bottom:24px;">
+              <h3 style="margin-bottom:16px;" data-i18n="settings_section_db">Base de Datos Supabase ☁</h3>
+              <p style="font-size:0.86rem; color:var(--text-secondary); margin-bottom:18px;" data-i18n="settings_desc_db">Credenciales de Supabase para activar la sincronización.</p>
+              
+              <div class="form-group">
+                <label data-i18n="settings_db_url">URL de Supabase</label>
+                <input type="password" id="settings-sb-url" placeholder="https://xxxx.supabase.co">
+              </div>
+              <div class="form-group">
+                <label data-i18n="settings_db_key">Anon Key de Supabase</label>
+                <input type="password" id="settings-sb-key" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...">
+              </div>
+              
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:10px;">
+                <button class="btn btn-secondary" id="settings-db-test-btn" data-i18n="settings_btn_test">Probar Conexión</button>
+                <button class="btn btn-primary" id="settings-db-save-btn" data-i18n="settings_btn_save">Guardar</button>
+              </div>
+            </div>
+
+            <div class="card">
+              <h3 style="margin-bottom:16px;" data-i18n="settings_section_reset">Día actual</h3>
+              <p style="font-size:0.86rem; color:var(--text-secondary); margin-bottom:18px;" data-i18n="settings_desc_reset">Reiniciar progreso del día.</p>
+              <button class="btn btn-danger btn-full" id="settings-reset-day-btn" data-i18n="settings_btn_reset">Reiniciar</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </main>
+
+  </div>
+
+  <!-- ===== PROFILE EDIT MODAL ===== -->
+  <div id="profile-edit-modal" class="onboarding-overlay hidden" style="background-color:rgba(0,0,0,0.6);">
+    <div class="onboarding-card" style="max-width:380px;">
+      <h3 style="margin-bottom:14px;">Editar Perfil</h3>
+      <div class="form-group">
+        <label>Nombre</label>
+        <input type="text" id="modal-edit-name" placeholder="Tu nombre">
+      </div>
+      <div class="form-group">
+        <label>Objetivo</label>
+        <select id="modal-edit-goal">
+          <option value="ganar músculo" data-i18n="goal_muscle">Ganar músculo</option>
+          <option value="perder grasa" data-i18n="goal_fat">Perder grasa</option>
+          <option value="mantener peso" data-i18n="goal_weight">Mantener peso</option>
+          <option value="mejorar hábitos" data-i18n="goal_habits">Mejorar hábitos</option>
+        </select>
+      </div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:20px;">
+        <button class="btn btn-secondary" id="modal-edit-cancel">Cancelar</button>
+        <button class="btn btn-primary" id="modal-edit-save">Guardar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== SUPABASE LOGIN/REGISTRATION MODAL ===== -->
+  <div id="auth-modal" class="onboarding-overlay hidden">
+    <div class="onboarding-card" style="max-width:400px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+        <h3 id="auth-modal-title">Iniciar Sesión</h3>
+        <button class="btn-icon" id="auth-modal-close" style="width:30px; height:30px;">✕</button>
+      </div>
+      
+      <div class="form-group">
+        <label>Correo Electrónico</label>
+        <input type="email" id="auth-email" placeholder="nombre@correo.com">
+      </div>
+      <div class="form-group">
+        <label>Contraseña</label>
+        <input type="password" id="auth-password" placeholder="Mínimo 6 caracteres">
+      </div>
+      
+      <div class="form-group hidden" id="auth-name-group">
+        <label>Nombre de Usuario</label>
+        <input type="text" id="auth-name" placeholder="Tu nombre">
+      </div>
+
+      <button class="btn btn-primary btn-full" id="auth-submit-btn" style="margin-top:14px; padding:14px 20px;">Entrar</button>
+
+      <p style="text-align:center; margin-top:16px; font-size:0.86rem; color:var(--text-secondary);">
+        <span id="auth-switch-text">¿No tienes cuenta?</span> 
+        <a href="#" id="auth-switch-link" style="color:var(--accent-green); font-weight:700; text-decoration:none; margin-left:4px;">Regístrate</a>
+      </p>
+    </div>
+  </div>
+
+  <!-- ===== TOAST NOTIFICATION CONTAINER ===== -->
+  <div id="toast-container" style="position:fixed; top:24px; right:24px; z-index:9999; display:flex; flex-direction:column; gap:10px;"></div>
+
+  <!-- Scripts -->
+  <script src="js/i18n.js"></script>
+  <script src="js/supabase.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/dashboard.js"></script>
+  <script src="js/training.js"></script>
+  <script src="js/supplements.js"></script>
+  <script src="js/nutrition.js"></script>
+  <script src="js/progress.js"></script>
+  <script src="js/profile.js"></script>
+  <script src="js/settings.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

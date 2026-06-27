@@ -1,1227 +1,139 @@
 <!DOCTYPE html>
 <html lang="es" data-theme="dark">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>HapyBody+ | Tu Asistente de Bienestar Fitness</title>
-  <meta name="description" content="HapyBody+ es tu asistente personal de bienestar fitness. Organiza entrenamientos, alimentación, suplementos, medicamentos y sigue tu progreso físico día a día." />
-  <meta name="theme-color" content="#080c14" />
-
-  <!-- Script para aplicar tema guardado antes de renderizar (evita theme flash) -->
-  <script>
-    (function() {
-      try {
-        const theme = localStorage.getItem('hb_theme') ? JSON.parse(localStorage.getItem('hb_theme')) : 'dark';
-        document.documentElement.setAttribute('data-theme', theme);
-        const meta = document.querySelector('meta[name="theme-color"]');
-        if (meta) meta.content = theme === 'dark' ? '#080c14' : '#f0f4f8';
-      } catch (e) {}
-    })();
-  </script>
-
-  <!-- Google Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
-
-  <!-- CSS -->
-  <link rel="stylesheet" href="css/main.css" />
-  <link rel="stylesheet" href="css/components.css" />
-  <link rel="stylesheet" href="css/views.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HapyBody+ — Esculpe tu cuerpo. Domina tus hábitos.</title>
+  <meta name="description" content="HapyBody+ es tu asistente fitness, nutrición y suplementos premium e inteligente diseñado para lograr resultados reales.">
+  <link rel="stylesheet" href="css/landing.css">
 </head>
 <body>
 
-  <!-- ===== ONBOARDING OVERLAY ===== -->
-  <div id="onboarding-overlay" class="onboarding-overlay hidden">
-    <div class="onboarding-card">
-      <!-- STEP 1: SPLASH SCREEN -->
-      <div id="onboard-step-1" class="onboard-slide">
-        <div class="onboard-splash-grid">
-          <div class="onboard-grid-item item-1">
-            <span class="grid-icon">🏋️</span>
-            <span class="grid-label" data-i18n="nav_training">Entrenamiento</span>
-          </div>
-          <div class="onboard-grid-item item-2">
-            <span class="grid-icon">🥗</span>
-            <span class="grid-label" data-i18n="nav_nutrition">Nutrición</span>
-          </div>
-          <div class="onboard-grid-item item-3">
-            <span class="grid-icon">💊</span>
-            <span class="grid-label" data-i18n="nav_supplements">Suplementos</span>
-          </div>
-          <div class="onboard-grid-item item-4">
-            <span class="grid-icon">📈</span>
-            <span class="grid-label" data-i18n="nav_progress">Progreso</span>
-          </div>
-        </div>
+  <!-- Background Mesh Glows -->
+  <div class="background-mesh">
+    <div class="mesh-glow-1"></div>
+    <div class="mesh-glow-2"></div>
+  </div>
 
-        <div class="onboarding-brand" style="text-align: center; margin: 24px 0 12px 0;">
-          <h1 class="onboard-main-title" data-i18n="onboard_main_title" style="font-size: 2.2rem; font-weight: 900; letter-spacing: -0.04em;">Bienvenido a HapyBody+</h1>
-          <p class="onboard-main-desc" data-i18n="onboard_main_desc" style="color: var(--text-secondary); font-size: 0.94rem; margin-top: 8px; line-height: 1.5;">Tu compañero premium de entrenamiento, nutrición y suplementos.</p>
-        </div>
-
-        <button id="onboarding-next-btn" class="btn btn-primary btn-full btn-large" style="margin-top: 14px; border-radius: var(--radius-full); font-weight: 700;">
-          <span data-i18n="onboard_next_btn">Siguiente</span>
-          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
-        </button>
-
-        <p style="text-align: center; margin-top: 20px; font-size: 0.84rem; color: var(--text-secondary);">
-          <span data-i18n="onboard_login_prompt">¿Ya tienes una cuenta?</span> 
-          <a href="#" id="onboarding-login-link" style="color: var(--accent-green); font-weight: 700; text-decoration: none; margin-left: 4px;" data-i18n="onboard_login_link">Iniciar Sesión</a>
-        </p>
+  <!-- Navigation Bar -->
+  <header>
+    <div class="nav-container">
+      <div class="logo-wrap">
+        <div class="logo-icon">⚡</div>
+        <span>HapyBody<span class="logo-plus">+</span></span>
       </div>
+      <div class="nav-actions">
+        <select id="lang-select" style="padding: 8px 12px; border-radius: var(--radius-full); background: var(--bg-secondary); border: 1px solid var(--border); color: var(--text-primary); cursor: pointer; font-size: 0.8rem; font-weight: 600;">
+          <option value="es">ES</option>
+          <option value="en">EN</option>
+          <option value="de">DE</option>
+          <option value="zh">ZH</option>
+        </select>
+        <button class="btn-theme" id="theme-btn" title="Cambiar tema">🌙</button>
+        <a href="app.html" class="btn-pill btn-primary" data-i18n="land_btn_app">Acceder a la App ⚡</a>
+      </div>
+    </div>
+  </header>
 
-      <!-- STEP 2: PROFILE CONFIGURATION -->
-      <div id="onboard-step-2" class="onboard-slide hidden">
-        <div class="onboarding-logo" style="margin-bottom: 16px;">
-          <div class="onboarding-logo-icon" style="width: 38px; height: 38px; font-size: 1.2rem;">⚡</div>
-          <span class="onboarding-logo-text" style="font-size: 1.3rem;">HapyBody<span class="logo-plus">+</span></span>
-        </div>
-        <h2 class="onboarding-title" data-i18n="onboard_welcome">¡Bienvenido a tu asistente fitness!</h2>
-        <p class="onboarding-sub" data-i18n="onboard_subtitle">Cuéntanos quién eres para personalizar tu experiencia de bienestar.</p>
-        
-        <div class="onboarding-form">
-          <div class="form-group">
-            <label for="user-name-input" data-i18n="onboard_label_name">¿CÓMO TE LLAMAS?</label>
-            <input type="text" id="user-name-input" data-i18n-placeholder="onboard_placeholder_name" placeholder="Ej: Carlos, Ana..." maxlength="30" autocomplete="off" />
-          </div>
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <h1 class="hero-title" data-i18n="land_title">Esculpe tu cuerpo. Domina tus hábitos.</h1>
+    <p class="hero-subtitle" data-i18n="land_subtitle">HapyBody+ es tu asistente premium e inteligente de fitness, nutrición y suplementos diseñado para lograr resultados reales.</p>
+    <a href="app.html" class="btn-pill hero-btn">
+      <span data-i18n="land_btn_app">Acceder a la App ⚡</span>
+    </a>
+  </section>
 
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
-            <div class="form-group">
-              <label for="onboard-lang-select" data-i18n="onboard_label_lang">¿IDIOMA PREFERIDO?</label>
-              <select id="onboard-lang-select" style="padding: 10px; border-radius: var(--radius-md); background: var(--bg-elevated); border: 1px solid var(--border); color: var(--text-primary); cursor: pointer;">
-                <option value="es">Español</option>
-                <option value="en">English</option>
-                <option value="de">Deutsch</option>
-                <option value="zh">中文</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label for="onboard-theme-select" data-i18n="onboard_label_theme">¿APARIENCIA PREFERIDA?</label>
-              <select id="onboard-theme-select" style="padding: 10px; border-radius: var(--radius-md); background: var(--bg-elevated); border: 1px solid var(--border); color: var(--text-primary); cursor: pointer;">
-                <option value="dark" data-i18n="onboard_theme_dark">Modo Oscuro</option>
-                <option value="light" data-i18n="onboard_theme_light">Modo Claro</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label data-i18n="onboard_label_goal">¿CUÁL ES TU OBJETIVO PRINCIPAL?</label>
-            <div class="goal-grid">
-              <div class="goal-card selected" data-goal="ganar músculo">
-                <div class="goal-card-icon">💪</div>
-                <div class="goal-card-text" data-i18n="goal_muscle">Ganar músculo</div>
-              </div>
-              <div class="goal-card" data-goal="perder grasa">
-                <div class="goal-card-icon">🔥</div>
-                <div class="goal-card-text" data-i18n="goal_fat">Perder grasa</div>
-              </div>
-              <div class="goal-card" data-goal="mantener peso">
-                <div class="goal-card-icon">⚖️</div>
-                <div class="goal-card-text" data-i18n="goal_weight">Mantener peso</div>
-              </div>
-              <div class="goal-card" data-goal="mejorar hábitos">
-                <div class="goal-card-icon">✅</div>
-                <div class="goal-card-text" data-i18n="goal_habits">Mejorar hábitos</div>
-              </div>
-              <div class="goal-card" data-goal="tener más energía">
-                <div class="goal-card-icon">⚡</div>
-                <div class="goal-card-text" data-i18n="goal_energy">Más energía</div>
-              </div>
-              <div class="goal-card" data-goal="mejorar condición">
-                <div class="goal-card-icon">🏃</div>
-                <div class="goal-card-text" data-i18n="goal_condition">Mejor condición</div>
-              </div>
-              <div class="goal-card" data-goal="mantenerme saludable">
-                <div class="goal-card-icon">🌿</div>
-                <div class="goal-card-text" data-i18n="goal_healthy">Mantenerme sano</div>
-              </div>
-              <div class="goal-card" data-goal="definir mi cuerpo">
-                <div class="goal-card-icon">⚡</div>
-                <div class="goal-card-text" data-i18n="goal_define">Definir cuerpo</div>
-              </div>
-            </div>
-          </div>
-
-          <button id="onboarding-submit-btn" class="btn btn-primary btn-full btn-large">
-            <span data-i18n="onboard_btn_start">Comenzar</span>
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
-          </button>
+  <!-- Mockup Preview -->
+  <section class="mockup-container">
+    <div class="mockup-frame">
+      <div class="mockup-inner">
+        <!-- Styled preview elements represent the app inside the landing page -->
+        <div style="padding: 40px; text-align: center; color: rgba(255,255,255,0.45); font-size: 1.1rem; font-weight: 500; font-family: sans-serif;">
+          <div style="font-size: 3rem; margin-bottom: 12px; filter: drop-shadow(0 0 20px rgba(0, 240, 122, 0.4));">⚡</div>
+          <div style="color: #fff; font-weight: 700; margin-bottom: 6px; letter-spacing: -0.02em;">HapyBody+ App Dashboard</div>
+          <div style="font-size: 0.85rem;" data-i18n="land_feat_sub">Un ecosistema minimalista y potente que se adapta a tu ritmo de vida.</div>
         </div>
       </div>
     </div>
-  </div>
+  </section>
 
-  <!-- ===== APP WRAPPER ===== -->
-  <div id="app" class="app-wrapper">
-
-    <!-- ===== SIDEBAR (Desktop) ===== -->
-    <aside class="sidebar" id="sidebar">
-
-      <!-- Brand -->
-      <div class="sidebar-brand">
-        <div class="logo-wrap">
-          <div class="logo-icon">⚡</div>
-          <span class="logo-text">HapyBody<span class="logo-plus">+</span></span>
-        </div>
-        <button class="theme-toggle-btn" data-theme-btn title="Cambiar tema">🌙</button>
-      </div>
-
-      <!-- User Profile Mini -->
-      <div class="sidebar-user" id="sidebar-user" title="Ver perfil">
-        <div class="sidebar-avatar" id="sidebar-avatar">C</div>
-        <div class="sidebar-user-info">
-          <div class="sidebar-user-name" id="sidebar-user-name">Cargando...</div>
-          <div class="sidebar-user-goal" id="sidebar-user-goal">—</div>
+  <!-- Features Section -->
+  <section class="features-section">
+    <div class="features-header">
+      <h2 class="features-title" data-i18n="land_feat_title">Diseñado para el bienestar integral</h2>
+      <p class="features-sub" data-i18n="land_feat_sub">Un ecosistema minimalista y potente que se adapta a tu ritmo de vida.</p>
+    </div>
+    <div class="features-grid">
+      <!-- Feature 1: Workouts -->
+      <div class="feature-card">
+        <div class="feature-icon">🏋️</div>
+        <div>
+          <h3 class="feature-name" data-i18n="land_feat_train">Entrenamiento Inteligente</h3>
+          <p class="feature-desc" data-i18n="land_feat_train_desc">Planifica tus rutinas semanales por grupo muscular y completa tus series fácilmente.</p>
         </div>
       </div>
 
-      <!-- Navigation -->
-      <nav class="sidebar-nav" role="navigation" aria-label="Navegación principal">
-        <div class="nav-section-label" data-i18n="nav_section_main">Principal</div>
-
-        <a href="#" class="nav-item active" data-view="dashboard" id="nav-dashboard" aria-label="Panel">
-          <div class="nav-item-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
-          </div>
-          <span data-i18n="nav_dashboard">Panel</span>
-        </a>
-
-        <a href="#" class="nav-item" data-view="training" id="nav-training" aria-label="Entrenamiento">
-          <div class="nav-item-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 6.5h11"/><path d="M6.5 17.5h11"/><path d="M3 10h3v4H3z"/><path d="M18 10h3v4h-3z"/><path d="M6.5 10v4"/><path d="M17.5 10v4"/></svg>
-          </div>
-          <span data-i18n="nav_training">Entrenamiento</span>
-        </a>
-
-        <a href="#" class="nav-item" data-view="nutrition" id="nav-nutrition" aria-label="Alimentación">
-          <div class="nav-item-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 1 0 10 10 10 10 0 0 0-10-10zm0 18a8 8 0 1 1 8-8 8 8 0 0 1-8 8z"/><path d="M12 6v6l4 2"/></svg>
-          </div>
-          <span data-i18n="nav_nutrition">Alimentación</span>
-        </a>
-
-        <a href="#" class="nav-item" data-view="progress" id="nav-progress" aria-label="Progreso">
-          <div class="nav-item-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z"/></svg>
-          </div>
-          <span data-i18n="nav_progress">Progreso</span>
-        </a>
-
-        <div class="nav-section-label" style="margin-top:8px" data-i18n="nav_section_track">Salud</div>
-
-        <a href="#" class="nav-item" data-view="supplements" id="nav-supplements" aria-label="Suplementos">
-          <div class="nav-item-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z"/><path d="m8.5 8.5 7 7"/></svg>
-          </div>
-          <span data-i18n="nav_supplements">Suplementos</span>
-        </a>
-
-        <div class="nav-section-label" style="margin-top:8px" data-i18n="nav_section_user">Cuenta</div>
-
-        <a href="#" class="nav-item" data-view="profile" id="nav-profile" aria-label="Perfil">
-          <div class="nav-item-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-          </div>
-          <span data-i18n="nav_profile">Perfil</span>
-        </a>
-
-        <a href="#" class="nav-item" data-view="settings" id="nav-settings" aria-label="Configuración">
-          <div class="nav-item-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
-          </div>
-          <span data-i18n="nav_settings">Configuración</span>
-        </a>
-      </nav>
-
-      <!-- Sidebar footer -->
-      <div class="sidebar-footer">
-        <button id="reset-day-btn" class="btn-ghost btn-small" title="Reiniciar día">
-          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
-          <span data-i18n="nav_reset_day">Reiniciar día</span>
-        </button>
-      </div>
-    </aside>
-
-    <!-- ===== MAIN CONTENT ===== -->
-    <main class="main-content" id="main-content">
-
-      <!-- ===== TOP BAR (Mobile) ===== -->
-      <header class="topbar" id="topbar">
-        <div class="topbar-brand">
-          <div class="topbar-logo-icon">⚡</div>
-          <span class="topbar-logo-text">HapyBody<span class="logo-plus">+</span></span>
-        </div>
-        <div class="topbar-right">
-          <span class="today-date-topbar" id="today-date-topbar"></span>
-          <button class="topbar-theme-btn" data-theme-btn title="Cambiar tema">🌙</button>
-        </div>
-      </header>
-
-      <!-- ==================== VIEW: DASHBOARD ==================== -->
-      <section class="view active" id="view-dashboard">
-        <div class="view-header">
-          <div class="view-header-left">
-            <h1 id="dashboard-greeting">¡Buenos días! 💪</h1>
-            <p class="view-subtitle" id="dashboard-date"></p>
-          </div>
-          <div class="streak-badge" id="streak-badge" title="Días consecutivos activo">
-            🔥 <span id="streak-count">0</span> días
-          </div>
-        </div>
-
-        <!-- Goal Banner -->
-        <div class="goal-display-banner" id="goal-display-banner"></div>
-
-        <!-- Motivational Quote -->
-        <div class="motivational-card" id="motivational-card">
-          <span class="quote-icon">✨</span>
-          <p id="motivational-quote">"La constancia supera al talento."</p>
-        </div>
-
-        <!-- Day Progress -->
-        <div class="day-progress-section">
-          <div class="day-progress-header">
-            <span class="section-label">Progreso de hoy</span>
-            <span class="day-progress-pct" id="day-progress-pct">0%</span>
-          </div>
-          <div class="progress-bar-track">
-            <div class="progress-bar-fill gradient-fill" id="day-progress-bar" style="width:0%"></div>
-          </div>
-        </div>
-
-        <!-- Summary Cards Grid -->
-        <div class="summary-grid">
-          <!-- Training -->
-          <div class="summary-card" id="dash-training-card" data-view-target="training">
-            <div class="summary-card-icon training-icon">
-              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 6.5h11"/><path d="M6.5 17.5h11"/><path d="M3 10h3v4H3z"/><path d="M18 10h3v4h-3z"/><path d="M6.5 10v4"/><path d="M17.5 10v4"/></svg>
-            </div>
-            <div class="summary-card-content">
-              <span class="summary-card-label" data-i18n="nav_training">Entrenamiento</span>
-              <span class="summary-card-value" id="dash-training-value">—</span>
-              <span class="summary-card-sub" id="dash-training-sub">Sin rutina hoy</span>
-            </div>
-            <svg class="summary-card-arrow" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
-          </div>
-
-          <!-- Water -->
-          <div class="summary-card water-card-main">
-            <div class="summary-card-icon water-icon">
-              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z"/></svg>
-            </div>
-            <div class="summary-card-content">
-              <span class="summary-card-label" data-i18n="dash_water_title">Agua</span>
-              <span class="summary-card-value" id="dash-water-value">0/8</span>
-              <div class="mini-water-track">
-                <div class="mini-water-fill" id="dash-water-bar" style="width:0%"></div>
-              </div>
-            </div>
-            <div class="water-quick-btns">
-              <button class="btn-water-quick" id="quick-water-plus" title="Agregar vaso" aria-label="Agregar vaso de agua">+1</button>
-            </div>
-          </div>
-
-          <!-- Supplements -->
-          <div class="summary-card" id="dash-supp-card" data-view-target="supplements">
-            <div class="summary-card-icon supp-icon">
-              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z"/><path d="m8.5 8.5 7 7"/></svg>
-            </div>
-            <div class="summary-card-content">
-              <span class="summary-card-label" data-i18n="nav_supplements">Suplementos</span>
-              <span class="summary-card-value" id="dash-supp-value">0 pendientes</span>
-              <span class="summary-card-sub" id="dash-supp-sub">Todo al día</span>
-            </div>
-            <svg class="summary-card-arrow" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
-          </div>
-
-          <!-- Medications -->
-          <div class="summary-card" id="dash-med-card" data-view-target="supplements">
-            <div class="summary-card-icon med-icon">
-              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
-            </div>
-            <div class="summary-card-content">
-              <span class="summary-card-label" data-i18n="supps_cat_med">Medicamentos</span>
-              <span class="summary-card-value" id="dash-med-value">0 pendientes</span>
-              <span class="summary-card-sub" id="dash-med-sub">Sin registros</span>
-            </div>
-            <svg class="summary-card-arrow" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
-          </div>
-
-          <!-- Nutrition -->
-          <div class="summary-card" id="dash-nutri-card" data-view-target="nutrition">
-            <div class="summary-card-icon nutri-icon">
-              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 12H3"/><path d="M16 6H3"/><path d="M16 18H3"/><path d="M18 9v6"/><path d="M21 12h-6"/></svg>
-            </div>
-            <div class="summary-card-content">
-              <span class="summary-card-label" data-i18n="nav_nutrition">Alimentación</span>
-              <span class="summary-card-value" id="dash-nutri-value">0 comidas</span>
-              <span class="summary-card-sub" id="dash-nutri-sub">Sin registros hoy</span>
-            </div>
-            <svg class="summary-card-arrow" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
-          </div>
-
-          <!-- Habits -->
-          <div class="summary-card" id="dash-habits-card" data-view-target="progress">
-            <div class="summary-card-icon habits-icon">
-              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="m9 12 2 2 4-4"/></svg>
-            </div>
-            <div class="summary-card-content">
-              <span class="summary-card-label" data-i18n="goal_habits">Hábitos</span>
-              <span class="summary-card-value" id="dash-habits-value">0/6</span>
-              <span class="summary-card-sub" id="dash-habits-sub">Completados hoy</span>
-            </div>
-            <svg class="summary-card-arrow" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
-          </div>
-        </div>
-
-        <!-- Today's Goals Checklist -->
-        <div class="todays-goals-card">
-          <div class="section-header">
-            <h2 class="section-title" data-i18n="onboard_label_goal">Mis metas de hoy ✅</h2>
-          </div>
-          <div class="goals-list" id="todays-goals-list">
-            <!-- Populated by JS -->
-          </div>
-        </div>
-
-        <!-- Today's Training Quick View -->
-        <div class="dashboard-section">
-          <div class="section-header">
-            <h2 class="section-title">Rutina de hoy 💪</h2>
-            <button class="btn-link" data-view-target="training">Ver todo</button>
-          </div>
-          <div id="dash-today-training" class="today-training-list">
-            <div class="empty-state-small">
-              <span>No tienes ejercicios para hoy.</span>
-              <button class="btn-link" data-view-target="training">+ Agregar</button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Pending Supplements/Meds -->
-        <div class="dashboard-section">
-          <div class="section-header">
-            <h2 class="section-title">Pendientes 💊</h2>
-            <button class="btn-link" data-view-target="supplements">Ver todo</button>
-          </div>
-          <div id="dash-pending-list" class="pending-list">
-            <div class="empty-state-small"><span>¡Todo al día! 🎉</span></div>
-          </div>
-        </div>
-
-        <!-- Recommendations -->
-        <div class="recommendations-card">
-          <div class="section-header">
-            <h2 class="section-title">Recomendaciones 💡</h2>
-          </div>
-          <div class="rec-list">
-            <div class="rec-item"><span class="rec-icon">💧</span>Beber agua antes de cada comida ayuda a controlar el apetito y mejora la digestión.</div>
-            <div class="rec-item"><span class="rec-icon">😴</span>Dormir 7-9 horas optimiza la recuperación muscular y el rendimiento físico.</div>
-            <div class="rec-item"><span class="rec-icon">🥩</span>Consumir proteína de calidad en cada comida apoya tus objetivos de composición corporal.</div>
-            <div class="rec-item"><span class="rec-icon">⏱️</span>El entrenamiento de fuerza 3-4 veces por semana es ideal para la mayoría de objetivos fitness.</div>
-          </div>
-        </div>
-      </section>
-
-      <!-- ==================== VIEW: TRAINING ==================== -->
-      <section class="view" id="view-training">
-        <div class="view-header">
-          <div class="view-header-left">
-            <h1 data-i18n="train_title">Entrenamiento 💪</h1>
-            <p class="view-subtitle" data-i18n="train_sub">Organiza tus rutinas por día de la semana</p>
-          </div>
-          <div class="view-header-actions">
-            <button class="btn btn-primary" id="add-exercise-btn">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
-              <span data-i18n="train_btn_add">Agregar</span>
-            </button>
-          </div>
-        </div>
-
-        <!-- Day Tabs -->
-        <div class="day-tabs-wrapper">
-          <div class="day-tabs" id="day-tabs" role="tablist">
-            <button class="day-tab" data-day="Lunes"    role="tab">Lun</button>
-            <button class="day-tab" data-day="Martes"   role="tab">Mar</button>
-            <button class="day-tab" data-day="Miércoles"role="tab">Mié</button>
-            <button class="day-tab" data-day="Jueves"   role="tab">Jue</button>
-            <button class="day-tab" data-day="Viernes"  role="tab">Vie</button>
-            <button class="day-tab" data-day="Sábado"   role="tab">Sáb</button>
-            <button class="day-tab" data-day="Domingo"  role="tab">Dom</button>
-          </div>
-        </div>
-
-        <!-- Day progress header -->
-        <div class="training-day-header">
-          <span class="training-day-label" id="training-day-label">Lunes</span>
-          <span class="training-day-count" id="training-day-count">0/0 completados</span>
-        </div>
-        <div class="progress-bar-track mb-16">
-          <div class="progress-bar-fill gradient-fill" id="training-day-bar" style="width:0%"></div>
-        </div>
-
-        <!-- Exercise list -->
-        <div id="exercise-list" class="exercise-list">
-          <div class="empty-state" id="exercise-empty">
-            <div class="empty-icon">🏋️</div>
-            <p data-i18n="train_empty">No hay ejercicios para este día</p>
-            <button class="btn btn-primary" id="add-exercise-btn-empty">+ <span data-i18n="train_btn_add">Agregar ejercicio</span></button>
-          </div>
-        </div>
-      </section>
-
-      <!-- ==================== VIEW: SUPPLEMENTS ==================== -->
-      <section class="view" id="view-supplements">
-        <div class="view-header">
-          <div class="view-header-left">
-            <h1 data-i18n="supps_title">Suplementos &amp; Medicamentos 💊</h1>
-            <p class="view-subtitle" data-i18n="supps_sub">Registra y controla tu toma diaria</p>
-          </div>
-        </div>
-
-        <!-- Tabs -->
-        <div class="view-tabs" id="supp-tabs">
-          <button class="view-tab active" data-tab="supplements-tab" id="tab-supps">💊 <span data-i18n="nav_supplements">Suplementos</span></button>
-          <button class="view-tab" data-tab="meds-tab" id="tab-meds">🩺 <span data-i18n="supps_cat_med">Medicamentos</span></button>
-        </div>
-
-        <!-- Supplements Tab -->
-        <div class="tab-panel active" id="supplements-tab">
-          <div class="tab-panel-header">
-            <div class="supp-stats">
-              <span class="stat-badge stat-pending" id="supp-pending-count">0 pendientes</span>
-              <span class="stat-badge stat-done" id="supp-done-count">0 tomados</span>
-            </div>
-            <button class="btn btn-primary btn-small" id="add-supp-btn">
-              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
-              <span data-i18n="supps_btn_add">Agregar</span>
-            </button>
-          </div>
-          <div id="supp-list" class="supp-list">
-            <div class="empty-state" id="supp-empty">
-              <div class="empty-icon">💊</div>
-              <p data-i18n="supps_empty">No tienes suplementos registrados</p>
-              <button class="btn btn-primary" id="add-supp-btn-empty">+ <span data-i18n="supps_btn_add">Agregar suplemento</span></button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Medications Tab -->
-        <div class="tab-panel" id="meds-tab">
-          <div class="tab-panel-header">
-            <div class="supp-stats">
-              <span class="stat-badge stat-pending" id="med-pending-count">0 pendientes</span>
-              <span class="stat-badge stat-done" id="med-done-count">0 tomados</span>
-            </div>
-            <button class="btn btn-primary btn-small" id="add-med-btn">
-              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
-              <span data-i18n="supps_btn_add">Agregar</span>
-            </button>
-          </div>
-          <div class="med-disclaimer">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
-            <span><strong>HapyBody+ solo recuerda lo que tú registras.</strong> No reemplaza a un médico ni a un farmacéutico. Consulta a un profesional de la salud para indicaciones médicas.</span>
-          </div>
-          <div id="med-list" class="supp-list">
-            <div class="empty-state" id="med-empty">
-              <div class="empty-icon">🩺</div>
-              <p>No tienes medicamentos registrados</p>
-              <button class="btn btn-primary" id="add-med-btn-empty">+ Agregar medicamento</button>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- ==================== VIEW: NUTRITION ==================== -->
-      <section class="view" id="view-nutrition">
-        <div class="view-header">
-          <div class="view-header-left">
-            <h1 data-i18n="nutri_title">Alimentación 🥗</h1>
-            <p class="view-subtitle" data-i18n="nutri_sub">Registra tus comidas y evalúa tu plato</p>
-          </div>
-          <div class="view-header-actions">
-            <button class="btn btn-primary" id="add-meal-btn">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
-              <span data-i18n="nutri_btn_add">Agregar</span>
-            </button>
-          </div>
-        </div>
-
-        <!-- My Plate Evaluator -->
-        <div class="my-plate-card">
-          <div class="my-plate-header">
-            <h2 class="section-title">Mi plato de hoy 🍽️</h2>
-            <span class="plate-score-badge" id="plate-score-badge">—</span>
-          </div>
-
-          <!-- Bar-style evaluator -->
-          <div class="plate-bars" id="plate-bars">
-            <!-- Populated by JS -->
-          </div>
-
-          <!-- Legacy hidden checkboxes (needed by JS) -->
-          <div class="plate-checks" id="plate-checks" style="display:none">
-            <label class="plate-check-item" for="plate-protein">
-              <input type="checkbox" id="plate-protein" data-nutrient="protein" />
-              <span class="plate-check-icon">🥩</span><span>Proteína</span>
-            </label>
-            <label class="plate-check-item" for="plate-carb">
-              <input type="checkbox" id="plate-carb" data-nutrient="carb" />
-              <span class="plate-check-icon">🌾</span><span>Carbohidrato</span>
-            </label>
-            <label class="plate-check-item" for="plate-veggies">
-              <input type="checkbox" id="plate-veggies" data-nutrient="veggies" />
-              <span class="plate-check-icon">🥦</span><span>Verduras</span>
-            </label>
-            <label class="plate-check-item" for="plate-fruit">
-              <input type="checkbox" id="plate-fruit" data-nutrient="fruit" />
-              <span class="plate-check-icon">🍎</span><span>Fruta</span>
-            </label>
-            <label class="plate-check-item" for="plate-water">
-              <input type="checkbox" id="plate-water" data-nutrient="water" />
-              <span class="plate-check-icon">💧</span><span>Agua</span>
-            </label>
-          </div>
-
-          <div class="plate-message" id="plate-message">
-            Marca lo que comiste hoy para evaluar tu plato.
-          </div>
-        </div>
-
-        <!-- Meals by type -->
-        <div class="meals-grid" id="meals-grid">
-          <div class="meal-type-section" id="meal-desayuno">
-            <h3 class="meal-type-title">☀️ Desayuno</h3>
-            <div class="meal-type-list" id="list-desayuno"></div>
-          </div>
-          <div class="meal-type-section" id="meal-almuerzo">
-            <h3 class="meal-type-title">🕛 Almuerzo</h3>
-            <div class="meal-type-list" id="list-almuerzo"></div>
-          </div>
-          <div class="meal-type-section" id="meal-cena">
-            <h3 class="meal-type-title">🌙 Cena</h3>
-            <div class="meal-type-list" id="list-cena"></div>
-          </div>
-          <div class="meal-type-section" id="meal-snack">
-            <h3 class="meal-type-title">🍎 Snack</h3>
-            <div class="meal-type-list" id="list-snack"></div>
-          </div>
-        </div>
-
-        <!-- Empty state -->
-        <div class="empty-state" id="nutrition-empty" style="display:none">
-          <div class="empty-icon">🥗</div>
-          <p>Aún no registraste comidas de hoy</p>
-          <button class="btn btn-primary" id="add-meal-btn-empty">+ Agregar comida</button>
-        </div>
-
-        <!-- Fitness meal suggestions -->
-        <div class="fitness-suggestions-section mt-32">
-          <div class="section-header">
-            <h2 class="section-title">Comidas fitness sugeridas 🥦</h2>
-          </div>
-          <div class="fitness-suggestions-grid" id="fitness-suggestions-grid">
-            <!-- Populated by JS -->
-          </div>
-        </div>
-      </section>
-
-      <!-- ==================== VIEW: PROGRESS ==================== -->
-      <section class="view" id="view-progress">
-        <div class="view-header">
-          <div class="view-header-left">
-            <h1>Hábitos &amp; Progreso 📊</h1>
-            <p class="view-subtitle">Seguimiento diario de tus métricas de bienestar</p>
-          </div>
-          <div class="view-header-actions">
-            <button class="btn btn-primary" id="add-progress-btn">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
-              Registrar
-            </button>
-          </div>
-        </div>
-
-        <!-- Habits -->
-        <div class="habits-section">
-          <div class="section-header">
-            <h2 class="section-title">Hábitos de hoy ✅</h2>
-            <span class="habits-pct" id="habits-pct">0/6</span>
-          </div>
-          <div class="progress-bar-track mb-16">
-            <div class="progress-bar-fill gradient-fill" id="habits-bar" style="width:0%"></div>
-          </div>
-          <div class="habits-grid" id="habits-grid">
-            <!-- Generated by JS -->
-          </div>
-        </div>
-
-        <!-- Water Section -->
-        <div class="water-section-card">
-          <div class="water-section-header">
-            <h2 class="section-title">Agua 💧</h2>
-            <span class="water-label-count" id="water-display">0 / 8 vasos</span>
-          </div>
-          <div class="water-glasses" id="water-glasses">
-            <!-- Generated by JS -->
-          </div>
-          <div class="water-btns">
-            <button class="btn btn-primary" id="water-plus-btn">+ 1 vaso</button>
-            <button class="btn btn-ghost" id="water-reset-btn">Reiniciar</button>
-          </div>
-        </div>
-
-        <!-- Physical Measurements -->
-        <div class="section-header mt-24">
-          <h2 class="section-title">Medidas físicas 📏</h2>
-        </div>
-
-        <div class="latest-stats-grid" id="latest-stats-grid">
-          <div class="stat-display-card">
-            <span class="stat-display-label">Peso</span>
-            <span class="stat-display-value" id="stat-weight">—</span>
-            <span class="stat-display-unit">kg</span>
-            <div class="stat-delta" id="delta-weight"></div>
-          </div>
-          <div class="stat-display-card">
-            <span class="stat-display-label">Cintura</span>
-            <span class="stat-display-value" id="stat-waist">—</span>
-            <span class="stat-display-unit">cm</span>
-            <div class="stat-delta" id="delta-waist"></div>
-          </div>
-          <div class="stat-display-card">
-            <span class="stat-display-label">Brazo</span>
-            <span class="stat-display-value" id="stat-arm">—</span>
-            <span class="stat-display-unit">cm</span>
-            <div class="stat-delta" id="delta-arm"></div>
-          </div>
-          <div class="stat-display-card">
-            <span class="stat-display-label">Pecho</span>
-            <span class="stat-display-value" id="stat-chest">—</span>
-            <span class="stat-display-unit">cm</span>
-            <div class="stat-delta" id="delta-chest"></div>
-          </div>
-        </div>
-
-        <!-- Comparison message -->
-        <div class="progress-compare-msg" id="progress-compare-msg" style="display:none"></div>
-
-        <!-- Weight chart -->
-        <div class="mini-chart-wrapper">
-          <div class="mini-chart-header">
-            <h2 class="section-title">Evolución del peso ⚖️</h2>
-          </div>
-          <canvas id="weight-chart" class="mini-chart-canvas" width="600" height="100"></canvas>
-        </div>
-
-        <!-- History -->
-        <div class="section-header mt-24">
-          <h2 class="section-title">Historial de medidas</h2>
-        </div>
-        <div id="progress-history-list" class="progress-history-list">
-          <div class="empty-state" id="progress-empty">
-            <div class="empty-icon">📊</div>
-            <p>No hay registros de progreso todavía</p>
-            <button class="btn btn-primary" id="add-progress-btn-empty">+ Registrar medidas</button>
-          </div>
-        </div>
-      </section>
-
-      <!-- ==================== VIEW: PROFILE ==================== -->
-      <section class="view" id="view-profile">
-        <div class="view-header">
-          <div class="view-header-left">
-            <h1>Mi Perfil 👤</h1>
-            <p class="view-subtitle">Personaliza tu experiencia en HapyBody+</p>
-          </div>
-        </div>
-
-        <!-- AUTH SECTION (Show when not logged in) -->
-        <div id="profile-auth-section" class="hidden">
-          <div class="card" style="max-width: 480px; margin: 24px auto;">
-            <div id="auth-login-box">
-              <h2 class="section-title mb-8" style="font-size: 1.3rem;">Iniciar Sesión 🔐</h2>
-              <p class="view-subtitle mb-20">Conéctate a tu cuenta para sincronizar tus datos en la nube.</p>
-              
-              <div class="form-group mb-12">
-                <label for="auth-login-email">Correo Electrónico</label>
-                <input type="email" id="auth-login-email" placeholder="ejemplo@correo.com" autocomplete="email" />
-              </div>
-              <div class="form-group mb-20">
-                <label for="auth-login-pass">Contraseña</label>
-                <input type="password" id="auth-login-pass" placeholder="Tu contraseña..." autocomplete="current-password" />
-              </div>
-              
-              <button class="btn btn-primary btn-full btn-large" id="auth-login-submit-btn">Entrar</button>
-              
-              <p style="text-align: center; margin-top: 16px; font-size: 0.84rem; color: var(--text-secondary);">
-                ¿No tienes cuenta? <a href="#" id="auth-goto-signup" style="color: var(--accent-green); font-weight: 600;">Registrarme</a>
-              </p>
-            </div>
-
-            <div id="auth-signup-box" class="hidden">
-              <h2 class="section-title mb-8" style="font-size: 1.3rem;">Crear Cuenta ⚡</h2>
-              <p class="view-subtitle mb-20">Registra tus datos para guardar tus rutinas y progreso en la nube.</p>
-              
-              <div class="form-group mb-12">
-                <label for="auth-signup-name">Nombre</label>
-                <input type="text" id="auth-signup-name" placeholder="Ej: Carlos" autocomplete="name" />
-              </div>
-              <div class="form-group mb-12">
-                <label for="auth-signup-email">Correo Electrónico</label>
-                <input type="email" id="auth-signup-email" placeholder="ejemplo@correo.com" autocomplete="email" />
-              </div>
-              <div class="form-group mb-20">
-                <label for="auth-signup-pass">Contraseña</label>
-                <input type="password" id="auth-signup-pass" placeholder="Mínimo 6 caracteres..." autocomplete="new-password" />
-              </div>
-              
-              <button class="btn btn-primary btn-full btn-large" id="auth-signup-submit-btn">Crear Cuenta</button>
-              
-              <p style="text-align: center; margin-top: 16px; font-size: 0.84rem; color: var(--text-secondary);">
-                ¿Ya tienes cuenta? <a href="#" id="auth-goto-login" style="color: var(--accent-green); font-weight: 600;">Iniciar Sesión</a>
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <!-- LOGGED IN SECTION (Show when logged in, or local fallback mode) -->
-        <div id="profile-logged-section">
-          <!-- Profile header card -->
-          <div class="profile-header-card" id="profile-header-card">
-            <!-- Populated by JS -->
-          </div>
-
-          <!-- Stats row -->
-          <div class="profile-stats-row" id="profile-stats-row">
-            <!-- Populated by JS -->
-          </div>
-
-          <!-- Edit name -->
-          <div class="card mb-20">
-            <h2 class="section-title mb-16">✏️ Editar nombre</h2>
-            <div class="form-group" style="flex-direction:row;gap:10px;align-items:flex-end">
-              <div style="flex:1">
-                <label for="profile-name-input">Nombre</label>
-                <input type="text" id="profile-name-input" placeholder="Tu nombre..." maxlength="30" autocomplete="off" />
-              </div>
-              <button class="btn btn-primary" id="profile-save-name-btn">Guardar</button>
-            </div>
-          </div>
-
-          <!-- Goal selection -->
-          <div class="card mb-20">
-            <h2 class="section-title mb-8">🎯 Mi objetivo principal</h2>
-            <p class="view-subtitle mb-16">Selecciona el objetivo que guíe tu plan de entrenamiento y alimentación.</p>
-            <div class="profile-goal-grid" id="profile-goal-grid">
-              <!-- Populated by JS -->
-            </div>
-          </div>
-
-          <!-- Cloud Integration Status (Show when logged in) -->
-          <div class="card mb-20 hidden" id="profile-cloud-status-card">
-            <h2 class="section-title mb-8">☁️ Sincronización en la Nube</h2>
-            <p class="view-subtitle mb-16" id="profile-cloud-sync-info">Sesión iniciada con: user@mail.com. Tus datos están a salvo.</p>
-            <div style="display: flex; gap: 8px; justify-content: flex-end;">
-              <button class="btn btn-secondary btn-small" id="profile-cloud-sync-btn">Forzar Sincronización</button>
-              <button class="btn btn-danger btn-small" id="profile-logout-btn">Cerrar Sesión</button>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- ==================== VIEW: SETTINGS ==================== -->
-      <section class="view" id="view-settings">
-        <div class="view-header">
-          <div class="view-header-left">
-            <h1>Configuración ⚙️</h1>
-            <p class="view-subtitle">Personaliza la app a tu gusto</p>
-          </div>
-        </div>
-
-        <!-- Appearance -->
-        <div class="settings-section">
-          <div class="settings-section-title" data-i18n="settings_section_app">Apariencia</div>
-          <div class="settings-row">
-            <div class="settings-row-info">
-              <div class="settings-row-label" data-i18n="settings_label_theme">Modo claro</div>
-              <div class="settings-row-desc" data-i18n="settings_desc_theme">Alterna entre tema oscuro y claro</div>
-            </div>
-            <label class="toggle-switch">
-              <input type="checkbox" id="settings-theme-toggle" />
-              <span class="toggle-slider"></span>
-            </label>
-          </div>
-        </div>
-
-        <!-- Idioma / Language -->
-        <div class="settings-section">
-          <div class="settings-section-title" data-i18n="settings_section_lang">Idioma / Language 🌐</div>
-          <div class="settings-row">
-            <div class="settings-row-info">
-              <div class="settings-row-label" data-i18n="settings_label_lang">Seleccionar idioma</div>
-              <div class="settings-row-desc" data-i18n="settings_desc_lang">Configura el idioma de la aplicación</div>
-            </div>
-            <select id="settings-lang-select" style="padding: 8px 12px; border-radius: var(--radius-md); background: var(--bg-elevated); border: 1px solid var(--border); color: var(--text-primary); cursor: pointer; font-size: 0.85rem; font-weight: 500;">
-              <option value="es">Español</option>
-              <option value="en">English</option>
-              <option value="de">Deutsch</option>
-              <option value="zh">中文</option>
-            </select>
-          </div>
-        </div>
-
-        <!-- Base de Datos -->
-        <div class="settings-section">
-          <div class="settings-section-title" data-i18n="settings_section_db">Conexión a Base de Datos (Supabase)</div>
-          <div class="settings-row" style="flex-direction: column; align-items: stretch; gap: 12px; padding: 18px 20px;">
-            <div class="settings-row-info">
-              <div class="settings-row-label" data-i18n="settings_section_db">Configurar Supabase</div>
-              <div class="settings-row-desc" data-i18n="settings_desc_db">Escribe las credenciales de tu proyecto de Supabase para habilitar el inicio de sesión y la sincronización.</div>
-            </div>
-            <div class="form-group" style="margin-top: 4px;">
-              <label for="settings-db-url" data-i18n="settings_db_url">URL de Supabase</label>
-              <input type="url" id="settings-db-url" placeholder="https://xxxx.supabase.co" autocomplete="off" />
-            </div>
-            <div class="form-group">
-              <label for="settings-db-key" data-i18n="settings_db_key">Anon Key de Supabase</label>
-              <input type="password" id="settings-db-key" placeholder="Tu clave anon..." autocomplete="off" />
-            </div>
-            <div style="display: flex; gap: 8px; justify-content: flex-end; margin-top: 8px;">
-              <button class="btn btn-secondary btn-small" id="settings-db-test-btn" data-i18n="settings_btn_test">Probar Conexión</button>
-              <button class="btn btn-primary btn-small" id="settings-db-save-btn" data-i18n="settings_btn_save">Guardar Conexión</button>
-            </div>
-            <div id="settings-db-status-msg" style="font-size: 0.8rem; margin-top: 4px; display: none;"></div>
-          </div>
-        </div>
-
-        <!-- Día -->
-        <div class="settings-section">
-          <div class="settings-section-title" data-i18n="settings_section_reset">Día actual</div>
-          <div class="settings-row">
-            <div class="settings-row-info">
-              <div class="settings-row-label" data-i18n="settings_label_reset">Reiniciar progreso del día</div>
-              <div class="settings-row-desc" data-i18n="settings_desc_reset">Agua, hábitos y estado de suplementos</div>
-            </div>
-            <button class="btn btn-ghost btn-small" id="settings-reset-day-btn" data-i18n="settings_btn_reset">Reiniciar</button>
-          </div>
-        </div>
-
-        <!-- Data -->
-        <div class="settings-section">
-          <div class="settings-section-title" data-i18n="settings_section_data">Datos</div>
-          <div class="settings-row">
-            <div class="settings-row-info">
-              <div class="settings-row-label" data-i18n="settings_label_export">Exportar mis datos</div>
-              <div class="settings-row-desc" data-i18n="settings_desc_export">Descarga un backup en formato JSON</div>
-            </div>
-            <button class="btn btn-secondary btn-small" id="settings-export-btn">
-              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-              <span data-i18n="settings_btn_export">Exportar JSON</span>
-            </button>
-          </div>
-          <div class="settings-row">
-            <div class="settings-row-info">
-              <div class="settings-row-label" data-i18n="settings_label_clear">Eliminar todos mis datos</div>
-              <div class="settings-row-desc" style="color:var(--danger)" data-i18n="settings_desc_clear">⚠️ Esta acción no se puede deshacer</div>
-            </div>
-            <button class="btn btn-danger btn-small" id="settings-reset-btn" data-i18n="settings_btn_clear">Eliminar todo</button>
-          </div>
-        </div>
-
-        <!-- About -->
-        <div class="settings-section">
-          <div class="settings-section-title">Acerca de</div>
-          <div class="settings-row">
-            <div class="settings-row-info">
-              <div class="settings-row-label">HapyBody+ v2.0</div>
-              <div class="settings-row-desc">Tu asistente personal de bienestar fitness. Datos almacenados localmente en tu dispositivo.</div>
-            </div>
-          </div>
-          <div class="settings-row">
-            <div class="settings-row-info">
-              <div class="settings-row-label">Aviso de salud</div>
-              <div class="settings-row-desc">HapyBody+ es una herramienta de seguimiento personal. No reemplaza a profesionales de la salud, médicos ni nutricionistas. Consulta a un especialista para decisiones médicas.</div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-    </main><!-- /main-content -->
-
-    <!-- ===== BOTTOM NAV (Mobile) ===== -->
-    <nav class="bottom-nav" id="bottom-nav" role="navigation" aria-label="Navegación inferior">
-      <a href="#" class="bottom-nav-item active" data-view="dashboard" aria-label="Panel">
-        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
-        <span>Panel</span>
-      </a>
-      <a href="#" class="bottom-nav-item" data-view="training" aria-label="Entrenamiento">
-        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 6.5h11"/><path d="M6.5 17.5h11"/><path d="M3 10h3v4H3z"/><path d="M18 10h3v4h-3z"/><path d="M6.5 10v4"/><path d="M17.5 10v4"/></svg>
-        <span>Entrena</span>
-      </a>
-      <a href="#" class="bottom-nav-item" data-view="nutrition" aria-label="Alimentación">
-        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 12H3"/><path d="M16 6H3"/><path d="M16 18H3"/><path d="M18 9v6"/><path d="M21 12h-6"/></svg>
-        <span>Comidas</span>
-      </a>
-      <a href="#" class="bottom-nav-item" data-view="supplements" aria-label="Suplementos">
-        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z"/><path d="m8.5 8.5 7 7"/></svg>
-        <span>Supl.</span>
-      </a>
-      <a href="#" class="bottom-nav-item" data-view="progress" aria-label="Progreso">
-        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
-        <span>Progreso</span>
-      </a>
-    </nav>
-
-  </div><!-- /app-wrapper -->
-
-  <!-- ==================== MODALS ==================== -->
-
-  <!-- Add Exercise Modal -->
-  <div class="modal-overlay" id="exercise-modal" role="dialog" aria-modal="true" aria-labelledby="exercise-modal-title">
-    <div class="modal">
-      <div class="modal-header">
-        <h2 id="exercise-modal-title">💪 Agregar ejercicio</h2>
-        <button class="modal-close" id="exercise-modal-close" aria-label="Cerrar">✕</button>
-      </div>
-      <div class="modal-body">
-        <div class="form-row">
-          <div class="form-group">
-            <label for="ex-day">Día</label>
-            <select id="ex-day">
-              <option>Lunes</option><option>Martes</option><option>Miércoles</option>
-              <option>Jueves</option><option>Viernes</option><option>Sábado</option><option>Domingo</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label for="ex-group">Grupo muscular</label>
-            <select id="ex-group">
-              <option>Pecho y tríceps</option><option>Espalda y bíceps</option><option>Piernas</option>
-              <option>Hombros</option><option>Abdomen y core</option><option>Cardio</option>
-              <option>Full body</option><option>Otro</option>
-            </select>
-          </div>
-        </div>
-        <div class="form-group">
-          <label for="ex-name">Ejercicio *</label>
-          <input type="text" id="ex-name" placeholder="Ej: Press banca, Sentadilla, Jalón..." required />
-        </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label for="ex-sets">Series</label>
-            <input type="number" id="ex-sets" min="1" max="20" value="4" />
-          </div>
-          <div class="form-group">
-            <label for="ex-reps">Repeticiones</label>
-            <input type="number" id="ex-reps" min="1" max="100" value="10" />
-          </div>
-          <div class="form-group">
-            <label for="ex-weight">Peso (kg)</label>
-            <input type="number" id="ex-weight" min="0" step="0.5" placeholder="0" />
-          </div>
+      <!-- Feature 2: Nutrition -->
+      <div class="feature-card">
+        <div class="feature-icon">🥗</div>
+        <div>
+          <h3 class="feature-name" data-i18n="land_feat_nutri">Nutrición Balanceada</h3>
+          <p class="feature-desc" data-i18n="land_feat_nutri_desc">Evalúa la composición de tu plato diario y mantén el equilibrio nutricional perfecto.</p>
         </div>
       </div>
-      <div class="modal-footer">
-        <button class="btn btn-ghost" id="exercise-modal-cancel">Cancelar</button>
-        <button class="btn btn-primary" id="exercise-modal-save">Guardar ejercicio</button>
+
+      <!-- Feature 3: Supplements -->
+      <div class="feature-card">
+        <div class="feature-icon">💊</div>
+        <div>
+          <h3 class="feature-name" data-i18n="land_feat_supp">Suplementos y Fórmulas</h3>
+          <p class="feature-desc" data-i18n="land_feat_supp_desc">Lleva el control de tus tomas diarias y dosis de vitaminas o medicamentos sin olvidos.</p>
+        </div>
+      </div>
+
+      <!-- Feature 4: Progress -->
+      <div class="feature-card">
+        <div class="feature-icon">📈</div>
+        <div>
+          <h3 class="feature-name" data-i18n="land_feat_prog">Evolución Física</h3>
+          <p class="feature-desc" data-i18n="land_feat_prog_desc">Registra tus medidas antropométricas y visualiza tu peso con gráficos interactivos.</p>
+        </div>
       </div>
     </div>
-  </div>
+  </section>
 
-  <!-- Add Supplement Modal -->
-  <div class="modal-overlay" id="supp-modal" role="dialog" aria-modal="true" aria-labelledby="supp-modal-title">
-    <div class="modal">
-      <div class="modal-header">
-        <h2 id="supp-modal-title">💊 Agregar suplemento</h2>
-        <button class="modal-close" id="supp-modal-close" aria-label="Cerrar">✕</button>
-      </div>
-      <div class="modal-body">
-        <div class="form-group">
-          <label>Categoría</label>
-          <div class="supp-category-select">
-            <button class="supp-cat-option" data-cat="proteina">🥛 Proteína</button>
-            <button class="supp-cat-option" data-cat="creatina">⚡ Creatina</button>
-            <button class="supp-cat-option" data-cat="vitaminas">☀️ Vitaminas</button>
-            <button class="supp-cat-option" data-cat="preentreno">🔥 Pre-entreno</button>
-            <button class="supp-cat-option active" data-cat="otro">💊 Otro</button>
-          </div>
-        </div>
-        <div class="form-group">
-          <label for="supp-name-select">Suplemento</label>
-          <select id="supp-name-select">
-            <option value="">-- Seleccionar --</option>
-            <option>Creatina</option><option>Proteína Whey</option><option>Pre-entreno</option>
-            <option>Vitamina D</option><option>Omega 3</option><option>Colágeno</option>
-            <option>Magnesio</option><option>Zinc</option><option>BCAA</option>
-            <option>Multivitamínico</option><option>L-Carnitina</option><option>Glutamina</option>
-            <option value="otro">Otro...</option>
-          </select>
-        </div>
-        <div class="form-group hidden" id="supp-custom-group">
-          <label for="supp-name-custom">Nombre personalizado</label>
-          <input type="text" id="supp-name-custom" placeholder="Nombre del suplemento..." />
-        </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label for="supp-hour">Hora</label>
-            <input type="time" id="supp-hour" value="07:00" />
-          </div>
-          <div class="form-group">
-            <label for="supp-freq">Frecuencia</label>
-            <select id="supp-freq">
-              <option>Diario</option><option>Días de entrenamiento</option>
-              <option>2 veces al día</option><option>Semanal</option>
-            </select>
-          </div>
-        </div>
-        <div class="form-group">
-          <label for="supp-note">Nota (opcional)</label>
-          <input type="text" id="supp-note" placeholder="Ej: Con el desayuno, en ayunas..." />
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button class="btn btn-ghost" id="supp-modal-cancel">Cancelar</button>
-        <button class="btn btn-primary" id="supp-modal-save">Guardar suplemento</button>
-      </div>
-    </div>
-  </div>
+  <!-- Footer -->
+  <footer class="landing-footer">
+    <p data-i18n="land_footer">© 2026 HapyBody+. Desarrollado con pasión para tu salud.</p>
+  </footer>
 
-  <!-- Add Medication Modal -->
-  <div class="modal-overlay" id="med-modal" role="dialog" aria-modal="true" aria-labelledby="med-modal-title">
-    <div class="modal">
-      <div class="modal-header">
-        <h2 id="med-modal-title">🩺 Agregar medicamento</h2>
-        <button class="modal-close" id="med-modal-close" aria-label="Cerrar">✕</button>
-      </div>
-      <div class="modal-body">
-        <div class="form-group">
-          <label for="med-name">Medicamento *</label>
-          <input type="text" id="med-name" placeholder="Ej: Paracetamol, Vitamina C, Hierro..." required />
-        </div>
-        <div class="form-group">
-          <label for="med-dose">Dosis</label>
-          <input type="text" id="med-dose" placeholder="Ej: 1 tableta, 500mg, 2 cápsulas..." />
-        </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label for="med-hour">Hora</label>
-            <input type="time" id="med-hour" value="08:00" />
-          </div>
-          <div class="form-group">
-            <label for="med-freq">Frecuencia</label>
-            <select id="med-freq">
-              <option>Diario</option><option>2 veces al día</option><option>3 veces al día</option>
-              <option>Con comidas</option><option>Semanal</option><option>Solo si necesito</option>
-            </select>
-          </div>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button class="btn btn-ghost" id="med-modal-cancel">Cancelar</button>
-        <button class="btn btn-primary" id="med-modal-save">Guardar medicamento</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Add Meal Modal -->
-  <div class="modal-overlay" id="meal-modal" role="dialog" aria-modal="true" aria-labelledby="meal-modal-title">
-    <div class="modal">
-      <div class="modal-header">
-        <h2 id="meal-modal-title">🥗 Registrar comida</h2>
-        <button class="modal-close" id="meal-modal-close" aria-label="Cerrar">✕</button>
-      </div>
-      <div class="modal-body">
-        <div class="form-group">
-          <label for="meal-type">Tipo de comida</label>
-          <select id="meal-type">
-            <option value="desayuno">☀️ Desayuno</option>
-            <option value="almuerzo">🕛 Almuerzo</option>
-            <option value="cena">🌙 Cena</option>
-            <option value="snack">🍎 Snack</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label for="meal-desc">Descripción *</label>
-          <textarea id="meal-desc" placeholder="Ej: Arroz integral, pollo a la plancha, ensalada verde y agua..." rows="3" required></textarea>
-        </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label for="meal-health">Nivel saludable</label>
-            <select id="meal-health">
-              <option value="alto">🟢 Alto</option>
-              <option value="medio">🟡 Medio</option>
-              <option value="bajo">🔴 Bajo</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label for="meal-hour">Hora</label>
-            <input type="time" id="meal-hour" />
-          </div>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button class="btn btn-ghost" id="meal-modal-cancel">Cancelar</button>
-        <button class="btn btn-primary" id="meal-modal-save">Guardar comida</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Add Progress Modal -->
-  <div class="modal-overlay" id="progress-modal" role="dialog" aria-modal="true" aria-labelledby="progress-modal-title">
-    <div class="modal">
-      <div class="modal-header">
-        <h2 id="progress-modal-title">📏 Registrar medidas</h2>
-        <button class="modal-close" id="progress-modal-close" aria-label="Cerrar">✕</button>
-      </div>
-      <div class="modal-body">
-        <div class="form-row">
-          <div class="form-group">
-            <label for="prog-weight">Peso (kg)</label>
-            <input type="number" id="prog-weight" step="0.1" min="0" placeholder="68.5" />
-          </div>
-          <div class="form-group">
-            <label for="prog-waist">Cintura (cm)</label>
-            <input type="number" id="prog-waist" step="0.5" min="0" placeholder="78" />
-          </div>
-        </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label for="prog-arm">Brazo (cm)</label>
-            <input type="number" id="prog-arm" step="0.5" min="0" placeholder="35" />
-          </div>
-          <div class="form-group">
-            <label for="prog-chest">Pecho (cm)</label>
-            <input type="number" id="prog-chest" step="0.5" min="0" placeholder="95" />
-          </div>
-        </div>
-        <div class="form-group">
-          <label for="prog-note">Nota personal (opcional)</label>
-          <textarea id="prog-note" placeholder="¿Cómo te sentiste esta semana? ¿Cambios notables?" rows="2"></textarea>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button class="btn btn-ghost" id="progress-modal-cancel">Cancelar</button>
-        <button class="btn btn-primary" id="progress-modal-save">Guardar medidas</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Toast Notification -->
-  <div class="toast" id="toast" role="alert" aria-live="polite"></div>
-
-  <!-- ==================== SCRIPTS ==================== -->
+  <!-- Scripts -->
   <script src="js/i18n.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="js/supabase.js"></script>
-  <script src="js/storage.js"></script>
-  <script src="js/app.js"></script>
-  <script src="js/dashboard.js"></script>
-  <script src="js/training.js"></script>
-  <script src="js/supplements.js"></script>
-  <script src="js/nutrition.js"></script>
-  <script src="js/progress.js"></script>
-  <script src="js/profile.js"></script>
-  <script src="js/settings.js"></script>
+  <script>
+    // Theme Management
+    const themeBtn = document.getElementById('theme-btn');
+    const getSavedTheme = () => localStorage.getItem('hb_theme') || 'dark';
+    const applyTheme = (theme) => {
+      document.documentElement.setAttribute('data-theme', theme);
+      themeBtn.textContent = theme === 'dark' ? '☀️' : '🌙';
+      localStorage.setItem('hb_theme', theme);
+    };
+    
+    applyTheme(getSavedTheme());
+    themeBtn.addEventListener('click', () => {
+      const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      applyTheme(next);
+    });
 
+    // Language Management
+    const langSelect = document.getElementById('lang-select');
+    I18n.init();
+    langSelect.value = I18n.getLanguage();
+    
+    langSelect.addEventListener('change', (e) => {
+      I18n.setLanguage(e.target.value);
+    });
+  </script>
 </body>
 </html>

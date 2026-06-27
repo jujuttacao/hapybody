@@ -1,191 +1,171 @@
 /* =====================================================
-   HapyBody+ — app.js v2.0
-   Router SPA, Estado Global, Tema, Init
+   HapyBody+ — app.js v2.0 (Premium Rebuild)
+   Núcleo Orquestador, Enrutador SPA, Temas y Onboarding
    ===================================================== */
 
 // ======================================================
-// TOAST UTILITY
+// TOAST NOTIFICATIONS
 // ======================================================
-const Toast = (() => {
-  const el = document.getElementById('toast');
-  let timer;
+const Toast = {
+  show: (message, type = 'info') => {
+    const container = document.getElementById('toast-container');
+    if (!container) return;
 
-  const icons = {
-    success: '✓',
-    error:   '✕',
-    warning: '⚠',
-    default: '•',
-  };
+    const toast = document.createElement('div');
+    toast.className = 'toast-notification';
+    
+    // Quick inline styling for premium glass toast
+    toast.style.background = 'var(--bg-surface)';
+    toast.style.border = `1px solid ${type === 'success' ? 'var(--accent-green)' : (type === 'error' ? 'var(--accent-red)' : 'var(--border)')}`;
+    toast.style.color = 'var(--text-primary)';
+    toast.style.padding = '12px 24px';
+    toast.style.borderRadius = 'var(--radius-md)';
+    toast.style.backdropFilter = 'blur(10px)';
+    toast.style.webkitBackdropFilter = 'blur(10px)';
+    toast.style.boxShadow = 'var(--shadow-lg)';
+    toast.style.fontSize = '0.9rem';
+    toast.style.fontWeight = '700';
+    toast.style.display = 'flex';
+    toast.style.alignItems = 'center';
+    toast.style.gap = '8px';
+    toast.style.opacity = '0';
+    toast.style.transform = 'translateY(-10px)';
+    toast.style.transition = 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)';
 
-  return {
-    show(msg, type = 'default', duration = 2800) {
-      clearTimeout(timer);
-      el.innerHTML = `<span>${icons[type] || '•'}</span><span>${msg}</span>`;
-      el.className = `toast show ${type}`;
-      timer = setTimeout(() => { el.className = 'toast'; }, duration);
-    }
-  };
-})();
+    const icon = type === 'success' ? '✓' : (type === 'error' ? '✕' : 'ℹ');
+    toast.innerHTML = `<span>${icon}</span> <span>${message}</span>`;
+
+    container.appendChild(toast);
+
+    // Trigger reflow for transition
+    toast.offsetHeight;
+    toast.style.opacity = '1';
+    toast.style.transform = 'translateY(0)';
+
+    setTimeout(() => {
+      toast.style.opacity = '0';
+      toast.style.transform = 'translateY(-10px)';
+      setTimeout(() => toast.remove(), 300);
+    }, 3000);
+  }
+};
+window.Toast = Toast;
+
 
 // ======================================================
 // THEME MANAGER
 // ======================================================
-const ThemeManager = (() => {
-  function apply(theme) {
-    document.documentElement.setAttribute('data-theme', theme);
-    // Update all theme toggle buttons
-    document.querySelectorAll('[data-theme-btn]').forEach(btn => {
-      btn.textContent = theme === 'dark' ? '☀️' : '🌙';
-      btn.title = theme === 'dark' ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro';
-    });
-    // Update meta theme-color
-    const meta = document.querySelector('meta[name="theme-color"]');
-    if (meta) meta.content = theme === 'dark' ? '#080c14' : '#f0f4f8';
-  }
+const ThemeManager = {
+  init: () => {
+    const savedTheme = Storage.Theme.get();
+    ThemeManager.apply(savedTheme);
 
-  function init() {
-    const saved = Storage.Theme.get();
-    apply(saved);
-
-    // Bind all theme toggle buttons
-    document.querySelectorAll('[data-theme-btn]').forEach(btn => {
+    const btn = document.getElementById('header-theme-toggle');
+    if (btn) {
       btn.addEventListener('click', () => {
         const next = Storage.Theme.toggle();
-        apply(next);
-        Toast.show(next === 'dark' ? 'Modo oscuro activado 🌙' : 'Modo claro activado ☀️', 'default', 1800);
+        ThemeManager.apply(next);
+        
+        // Re-render Profile view to update the theme status text if active
+        if (Router.getCurrent() === 'profile') ProfileView.render();
       });
-    });
+    }
+  },
+  apply: (theme) => {
+    document.documentElement.setAttribute('data-theme', theme);
+    const btn = document.getElementById('header-theme-toggle');
+    if (btn) {
+      btn.textContent = theme === 'dark' ? '☀️' : '🌙';
+    }
   }
+};
+window.ThemeManager = ThemeManager;
 
-  return { init, apply };
-})();
 
 // ======================================================
-// ROUTER
+// ROUTER (SPA navigation)
 // ======================================================
 const Router = (() => {
-  const views = ['dashboard', 'training', 'supplements', 'nutrition', 'progress', 'profile', 'settings'];
   let currentView = 'dashboard';
 
-  function navigate(viewId) {
-    if (!views.includes(viewId)) return;
-    currentView = viewId;
-
-    // Toggle views
-    views.forEach(v => {
-      const el = document.getElementById(`view-${v}`);
-      if (el) el.classList.toggle('active', v === viewId);
-    });
-
-    // Update sidebar nav items
-    document.querySelectorAll('.nav-item[data-view]').forEach(item => {
-      item.classList.toggle('active', item.dataset.view === viewId);
-    });
-
-    // Update bottom nav items
-    document.querySelectorAll('.bottom-nav-item[data-view]').forEach(item => {
-      item.classList.toggle('active', item.dataset.view === viewId);
-    });
-
-    // Trigger view render
-    switch (viewId) {
-      case 'dashboard':   DashboardView.render(); break;
-      case 'training':    TrainingView.render();  break;
-      case 'supplements': SuppsView.render();     break;
-      case 'nutrition':   NutritionView.render(); break;
-      case 'progress':    ProgressView.render();  break;
-      case 'profile':     ProfileView.render();   break;
-      case 'settings':    SettingsView.render();  break;
-    }
-
-    // Scroll to top
-    const main = document.getElementById('main-content');
-    if (main) main.scrollTo({ top: 0, behavior: 'smooth' });
-  }
-
   function init() {
-    // Sidebar nav links
-    document.querySelectorAll('.nav-item[data-view]').forEach(item => {
-      item.addEventListener('click', e => {
+    // Navigation click handler (desktop sidebar & mobile bottom bar)
+    const links = document.querySelectorAll('[data-view]');
+    links.forEach(link => {
+      link.addEventListener('click', () => {
+        const view = link.getAttribute('data-view');
+        navigate(view);
+      });
+    });
+
+    // Handle view redirects inside elements (e.g. Dashboard "Ir" links)
+    document.body.addEventListener('click', (e) => {
+      const redirect = e.target.closest('.view-redirect-link');
+      if (redirect) {
         e.preventDefault();
-        navigate(item.dataset.view);
-      });
-    });
-
-    // Bottom nav links
-    document.querySelectorAll('.bottom-nav-item[data-view]').forEach(item => {
-      item.addEventListener('click', e => {
-        e.preventDefault();
-        navigate(item.dataset.view);
-      });
-    });
-
-    // Any element with data-view-target
-    document.addEventListener('click', e => {
-      const target = e.target.closest('[data-view-target]');
-      if (target) navigate(target.dataset.viewTarget);
-    });
-  }
-
-  return { navigate, init, getCurrent: () => currentView };
-})();
-
-// ======================================================
-// MODAL UTILITY
-// ======================================================
-const Modal = (() => {
-  function open(id) {
-    const overlay = document.getElementById(id);
-    if (!overlay) return;
-    overlay.classList.add('open');
-    document.body.style.overflow = 'hidden';
-    setTimeout(() => {
-      const firstInput = overlay.querySelector('input:not([type="hidden"]), select, textarea');
-      if (firstInput) firstInput.focus();
-    }, 120);
-  }
-
-  function close(id) {
-    const overlay = document.getElementById(id);
-    if (overlay) overlay.classList.remove('open');
-    document.body.style.overflow = '';
-  }
-
-  function init() {
-    // Close buttons (✕ and Cancel)
-    document.querySelectorAll('.modal-close, [id$="-modal-cancel"]').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const modal = btn.closest('.modal-overlay');
-        if (modal) {
-          modal.classList.remove('open');
-          document.body.style.overflow = '';
-        }
-      });
-    });
-
-    // Close on backdrop click
-    document.querySelectorAll('.modal-overlay').forEach(overlay => {
-      overlay.addEventListener('click', e => {
-        if (e.target === overlay) {
-          overlay.classList.remove('open');
-          document.body.style.overflow = '';
-        }
-      });
-    });
-
-    // ESC key
-    document.addEventListener('keydown', e => {
-      if (e.key === 'Escape') {
-        document.querySelectorAll('.modal-overlay.open').forEach(m => {
-          m.classList.remove('open');
-          document.body.style.overflow = '';
-        });
+        const view = redirect.dataset.targetView;
+        navigate(view);
       }
     });
   }
 
-  return { open, close, init };
+  function navigate(viewId) {
+    const panels = document.querySelectorAll('.view-panel');
+    const panel = document.getElementById(`view-${viewId}`);
+    if (!panel) return;
+
+    currentView = viewId;
+
+    // Toggle panels visibility
+    panels.forEach(p => p.classList.remove('active'));
+    panel.classList.add('active');
+
+    // Update active state in sidebar and bottom navbar
+    document.querySelectorAll('[data-view]').forEach(link => {
+      if (link.getAttribute('data-view') === viewId) {
+        link.classList.add('active');
+      } else {
+        link.classList.remove('active');
+      }
+    });
+
+    // Update title text in header
+    const titleText = document.getElementById('header-title-text');
+    if (titleText) {
+      titleText.setAttribute('data-i18n', `nav_${viewId}`);
+    }
+
+    // Run render function on target view
+    const renderers = {
+      dashboard: DashboardView.render,
+      training: TrainingView.render,
+      supplements: SuppsView.render,
+      nutrition: NutritionView.render,
+      progress: ProgressView.render,
+      profile: ProfileView.render,
+      settings: SettingsView.render
+    };
+
+    if (renderers[viewId]) {
+      renderers[viewId]();
+    }
+
+    // Refresh translation terms in DOM
+    I18n.translateDOM();
+  }
+
+  function getCurrent() {
+    return currentView;
+  }
+
+  return {
+    init,
+    navigate,
+    getCurrent
+  };
 })();
+window.Router = Router;
+
 
 // ======================================================
 // ONBOARDING
@@ -193,12 +173,13 @@ const Modal = (() => {
 function initOnboarding() {
   const overlay = document.getElementById('onboarding-overlay');
   if (!overlay) return;
+
   const user = Storage.User.get();
 
   if (!user) {
     overlay.classList.remove('hidden');
 
-    // Onboarding step 1 "Next" navigation
+    // Slide 1 "Next" button transition
     const nextBtn = document.getElementById('onboarding-next-btn');
     if (nextBtn) {
       nextBtn.addEventListener('click', () => {
@@ -207,17 +188,20 @@ function initOnboarding() {
       });
     }
 
-    // Onboarding step 1 "Log In" direct redirect
+    // Slide 1 direct login redirect link
     const loginLink = document.getElementById('onboarding-login-link');
     if (loginLink) {
       loginLink.addEventListener('click', (e) => {
         e.preventDefault();
         overlay.classList.add('hidden');
-        Router.navigate('profile');
+        
+        // Open Auth modal
+        const auth = document.getElementById('auth-modal');
+        if (auth) auth.classList.remove('hidden');
       });
     }
 
-    // Language selector change
+    // Language selector changer
     const langSelect = document.getElementById('onboard-lang-select');
     if (langSelect) {
       langSelect.value = I18n.getLanguage();
@@ -226,7 +210,7 @@ function initOnboarding() {
       });
     }
 
-    // Theme selector change
+    // Theme selector changer
     const themeSelect = document.getElementById('onboard-theme-select');
     if (themeSelect) {
       themeSelect.value = Storage.Theme.get();
@@ -235,145 +219,175 @@ function initOnboarding() {
       });
     }
 
-    // Goal card selection
-    let selectedGoal = 'ganar músculo';
-    document.querySelectorAll('.goal-card').forEach(card => {
+    // Goals card selections
+    let activeGoal = 'ganar músculo';
+    const goalCards = document.querySelectorAll('.goal-card');
+    goalCards.forEach(card => {
       card.addEventListener('click', () => {
-        document.querySelectorAll('.goal-card').forEach(c => c.classList.remove('selected'));
+        goalCards.forEach(c => c.classList.remove('selected'));
         card.classList.add('selected');
-        selectedGoal = card.dataset.goal;
+        activeGoal = card.dataset.goal;
       });
     });
 
-    // Submit onboarding
-    document.getElementById('onboarding-submit-btn').addEventListener('click', () => {
-      const nameInput = document.getElementById('user-name-input');
-      const name = nameInput.value.trim() || 'Campeón';
-      const lang = langSelect ? langSelect.value : 'es';
-      const theme = themeSelect ? themeSelect.value : 'dark';
+    // Form submit button
+    const submitBtn = document.getElementById('onboarding-submit-btn');
+    if (submitBtn) {
+      submitBtn.addEventListener('click', () => {
+        const nameInput = document.getElementById('user-name-input');
+        const name = nameInput.value.trim() || 'Campeón';
+        const lang = langSelect ? langSelect.value : 'es';
+        const theme = themeSelect ? themeSelect.value : 'dark';
 
-      Storage.Theme.set(theme);
-      I18n.setLanguage(lang);
-      Storage.User.set({ name, goal: selectedGoal, joinDate: Storage.todayStr() });
+        Storage.Theme.set(theme);
+        I18n.setLanguage(lang);
+        Storage.User.set({
+          name,
+          goal: activeGoal,
+          joinDate: Storage.todayStr()
+        });
 
-      overlay.classList.add('hidden');
-      // Update sidebar user info
-      updateSidebarUser();
-      DashboardView.render();
-      Toast.show(`${t('dash_hello')}, ${name}! 💪`, 'success');
-    });
+        // Seed demo data on initial load
+        Storage.seedDemoData();
 
+        overlay.classList.add('hidden');
+        updateSidebarUser();
+        Router.navigate('dashboard');
+        
+        Toast.show(`${t('dash_hello')}, ${name}! 💪`, 'success');
+      });
+    }
+
+    // Name Enter press shortcut
     document.getElementById('user-name-input').addEventListener('keydown', e => {
-      if (e.key === 'Enter') document.getElementById('onboarding-submit-btn').click();
+      if (e.key === 'Enter') submitBtn.click();
     });
+  } else {
+    // If user is already set up, we still make sure we seed demo data if they are new
+    Storage.seedDemoData();
+    updateSidebarUser();
+    Router.navigate('dashboard');
   }
 }
 
 // ======================================================
-// SIDEBAR USER DISPLAY
+// AUTHENTICATION MODAL (Supabase login)
 // ======================================================
-function updateSidebarUser() {
-  const user = Storage.User.get();
-  if (!user) return;
+function initAuthModal() {
+  const modal = document.getElementById('auth-modal');
+  const closeBtn = document.getElementById('auth-modal-close');
+  const switchLink = document.getElementById('auth-switch-link');
+  const switchText = document.getElementById('auth-switch-text');
+  const nameGroup = document.getElementById('auth-name-group');
+  const modalTitle = document.getElementById('auth-modal-title');
+  const submitBtn = document.getElementById('auth-submit-btn');
 
-  const nameEl = document.getElementById('sidebar-user-name');
-  const goalEl = document.getElementById('sidebar-user-goal');
-  const avatarEl = document.getElementById('sidebar-avatar');
+  if (!modal) return;
 
-  const goalLabels = {
-    'ganar músculo':       '💪 Ganar músculo',
-    'perder grasa':        '🔥 Perder grasa',
-    'mantener peso':       '⚖️ Mantener peso',
-    'mejorar hábitos':     '✅ Mejorar hábitos',
-    'tener más energía':   '⚡ Más energía',
-    'mejorar condición':   '🏃 Mejor condición',
-    'mantenerme saludable':'🌿 Salud',
-    'definir mi cuerpo':   '⚡ Definición',
-  };
+  let isSignUpMode = false;
 
-  if (nameEl) nameEl.textContent = user.name;
-  if (goalEl) goalEl.textContent = goalLabels[user.goal] || user.goal;
-  if (avatarEl) avatarEl.textContent = user.name.charAt(0).toUpperCase();
-}
+  closeBtn.addEventListener('click', () => {
+    modal.classList.add('hidden');
+  });
 
-// ======================================================
-// RESET DAY BUTTON
-// ======================================================
-function initResetDay() {
-  const btn = document.getElementById('reset-day-btn');
-  if (!btn) return;
+  switchLink.addEventListener('click', (e) => {
+    e.preventDefault();
+    isSignUpMode = !isSignUpMode;
+    
+    if (isSignUpMode) {
+      modalTitle.textContent = 'Registrarse';
+      switchText.textContent = '¿Ya tienes cuenta?';
+      switchLink.textContent = 'Inicia Sesión';
+      nameGroup.classList.remove('hidden');
+      submitBtn.textContent = 'Crear Cuenta';
+    } else {
+      modalTitle.textContent = 'Iniciar Sesión';
+      switchText.textContent = '¿No tienes cuenta?';
+      switchLink.textContent = 'Regístrate';
+      nameGroup.classList.add('hidden');
+      submitBtn.textContent = 'Entrar';
+    }
+  });
 
-  btn.addEventListener('click', () => {
-    if (confirm('¿Reiniciar el progreso diario? Se reseteará agua, hábitos, plato, suplementos y medicamentos.')) {
-      Storage.resetDay();
-      Router.navigate(Router.getCurrent());
-      Toast.show('Día reiniciado ✓', 'success');
+  submitBtn.addEventListener('click', async () => {
+    const email = document.getElementById('auth-email').value.trim();
+    const password = document.getElementById('auth-password').value.trim();
+    const name = document.getElementById('auth-name').value.trim();
+
+    if (!email || !password || (isSignUpMode && !name)) {
+      Toast.show('Por favor completa todos los campos requeridos', 'error');
+      return;
+    }
+
+    submitBtn.textContent = 'Cargando...';
+    submitBtn.disabled = true;
+
+    try {
+      if (isSignUpMode) {
+        // Sign Up Flow
+        const defaultGoal = 'ganar músculo';
+        await SupabaseClient.signUp(email, password, name, defaultGoal);
+        
+        Storage.User.set({ name, goal: defaultGoal, joinDate: Storage.todayStr() });
+        Toast.show('¡Registro exitoso! Por favor inicia sesión.', 'success');
+        
+        // Switch mode to login
+        isSignUpMode = false;
+        switchLink.click();
+      } else {
+        // Login Flow
+        const res = await SupabaseClient.login(email, password);
+        Toast.show('Sesión iniciada con éxito ✓', 'success');
+        
+        // Sync cloud database contents to local storage
+        await SupabaseClient.downloadAllCloudToLocal(res.user.id);
+        
+        modal.classList.add('hidden');
+        location.reload(); // Reload to refresh views with new synced data
+      }
+    } catch (e) {
+      console.error(e);
+      Toast.show(e.message || 'Error en la autenticación', 'error');
+    } finally {
+      submitBtn.textContent = isSignUpMode ? 'Crear Cuenta' : 'Entrar';
+      submitBtn.disabled = false;
     }
   });
 }
 
-// ======================================================
-// DATE FORMATTERS
-// ======================================================
-function formatDate(date = new Date()) {
-  const days   = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
-  const months = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
-  return `${days[date.getDay()]}, ${date.getDate()} de ${months[date.getMonth()]} de ${date.getFullYear()}`;
-}
-
-function formatDateShort(ts) {
-  const d = new Date(ts);
-  const months = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
-  return `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
-}
-
-function formatTime(timeStr) {
-  if (!timeStr) return '';
-  const [h, m] = timeStr.split(':').map(Number);
-  const ampm = h >= 12 ? 'p.m.' : 'a.m.';
-  const hh = h % 12 || 12;
-  return `${hh}:${String(m).padStart(2,'0')} ${ampm}`;
-}
 
 // ======================================================
-// APP INIT
+// AUXILIARY HELPERS
 // ======================================================
-function initApp() {
-  // 0. Inicializar traducción
-  if (window.I18n) {
-    I18n.init();
+function updateSidebarUser() {
+  const user = Storage.User.get();
+  const sidebarName = document.getElementById('sidebar-user-name');
+  const sidebarGoal = document.getElementById('sidebar-user-goal');
+  const sidebarAvatar = document.getElementById('sidebar-user-avatar');
+
+  if (user) {
+    if (sidebarName) sidebarName.textContent = user.name;
+    if (sidebarGoal) sidebarGoal.textContent = user.goal || 'ganar músculo';
+    if (sidebarAvatar) sidebarAvatar.textContent = user.name.charAt(0).toUpperCase();
   }
+}
+window.updateSidebarUser = updateSidebarUser;
 
-  // 1. Sincronización asíncrona en segundo plano si está conectado a Supabase
-  if (window.SupabaseClient && SupabaseClient.isConnected()) {
-    SupabaseClient.getSessionUser().then(user => {
-      if (user) {
-        SupabaseClient.downloadAllCloudToLocal(user.id).then(success => {
-          if (success) {
-            Router.navigate(Router.getCurrent());
-            updateSidebarUser();
-          }
-        });
-      }
-    });
-  }
 
-  // 2. Check/reset day
-  Storage.checkAndResetDay();
+// ======================================================
+// INITIALIZATION
+// ======================================================
+document.addEventListener('DOMContentLoaded', () => {
+  // Initialize i18n
+  I18n.init();
 
-  // 2. Seed demo data on first visit
-  if (!Storage.User.get()) {
-    Storage.seedDemoData();
-  }
-
-  // 3. Apply theme
+  // Initialize Theme manager
   ThemeManager.init();
 
-  // 4. Init utilities
-  Modal.init();
+  // Initialize SPA Router
   Router.init();
 
-  // 5. Init all view modules
+  // Initialize View modules
   DashboardView.init();
   TrainingView.init();
   SuppsView.init();
@@ -382,29 +396,28 @@ function initApp() {
   ProfileView.init();
   SettingsView.init();
 
-  // 6. Onboarding
+  // Onboarding overlay setup
   initOnboarding();
 
-  // 7. Reset day button
-  initResetDay();
+  // Authentication Setup
+  initAuthModal();
 
-  // 8. Update sidebar user
-  updateSidebarUser();
+  // Render active view (Router does this automatically on navigate)
+  Router.navigate(Router.getCurrent());
 
-  // 9. Sidebar user click → profile
-  const sidebarUser = document.getElementById('sidebar-user');
-  if (sidebarUser) {
-    sidebarUser.addEventListener('click', () => Router.navigate('profile'));
-  }
-
-  // 10. Update topbar date
-  const dateEl = document.getElementById('today-date-topbar');
+  // Date banner update
+  const dateEl = document.getElementById('header-subtitle-date');
   if (dateEl) {
-    dateEl.textContent = new Date().toLocaleDateString('es-ES', { day: 'numeric', month: 'short' });
+    const opts = { weekday: 'long', day: 'numeric', month: 'long' };
+    const dateStr = new Date().toLocaleDateString(undefined, opts);
+    dateEl.textContent = dateStr.charAt(0).toUpperCase() + dateStr.slice(1);
   }
 
-  // 11. Initial render
-  Router.navigate('dashboard');
-}
-
-document.addEventListener('DOMContentLoaded', initApp);
+  // Sidebar profile click directs to Profile panel
+  const sidebarProfileBtn = document.getElementById('sidebar-profile-btn');
+  if (sidebarProfileBtn) {
+    sidebarProfileBtn.addEventListener('click', () => {
+      Router.navigate('profile');
+    });
+  }
+});

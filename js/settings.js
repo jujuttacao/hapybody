@@ -1,141 +1,90 @@
 /* =====================================================
-   HapyBody+ — settings.js v2.0
-   Vista de Configuración
+   HapyBody+ — settings.js v2.0 (Rebuild)
    ===================================================== */
 
 const SettingsView = (() => {
-  // ---- Render settings view ----
-  function render() {
-    const theme = Storage.Theme.get();
-    const themeToggle = document.getElementById('settings-theme-toggle');
-    if (themeToggle) themeToggle.checked = theme === 'light';
-
-    // Load Supabase credentials
-    const creds = SupabaseClient.getCredentials();
-    const urlEl = document.getElementById('settings-db-url');
-    const keyEl = document.getElementById('settings-db-key');
-    if (urlEl) urlEl.value = creds.url;
-    if (keyEl) keyEl.value = creds.key;
-
-    // Load active language
-    const langSelect = document.getElementById('settings-lang-select');
-    if (langSelect) langSelect.value = I18n.getLanguage();
-
-    // Reset status message
-    const msgEl = document.getElementById('settings-db-status-msg');
-    if (msgEl) msgEl.style.display = 'none';
-  }
-
-  // ---- Export data to JSON ----
-  function exportData() {
-    const json = Storage.exportData();
-    const blob = new Blob([json], { type: 'application/json' });
-    const url  = URL.createObjectURL(blob);
-    const a    = document.createElement('a');
-    a.href     = url;
-    a.download = `hapybody-backup-${new Date().toISOString().split('T')[0]}.json`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-    Toast.show('Datos exportados correctamente ✓', 'success');
-  }
-
-  // ---- Reset all data ----
-  function resetAllData() {
-    if (!confirm('⚠️ ¿Estás seguro de que quieres borrar TODOS tus datos? Esta acción no se puede deshacer.')) return;
-    if (!confirm('🚨 Última confirmación: se borrarán todos tus registros, ejercicios, comidas, suplementos y progreso.')) return;
-
-    Storage.resetAll();
-    Toast.show('Todos los datos han sido eliminados', 'warning');
-    setTimeout(() => location.reload(), 1200);
-  }
-
-  // ---- Init ----
+  
   function init() {
-    // Theme toggle in settings
-    const themeToggle = document.getElementById('settings-theme-toggle');
-    if (themeToggle) {
-      themeToggle.addEventListener('change', () => {
-        const next = Storage.Theme.toggle();
-        ThemeManager.apply(next);
-        Toast.show(next === 'dark' ? 'Modo oscuro activado 🌙' : 'Modo claro activado ☀️', 'default', 1800);
-      });
-    }
+    // Fill credentials in inputs
+    const creds = SupabaseClient.getCredentials();
+    const urlInput = document.getElementById('settings-sb-url');
+    const keyInput = document.getElementById('settings-sb-key');
+    
+    if (urlInput) urlInput.value = creds.url;
+    if (keyInput) keyInput.value = creds.key;
 
-    // Language select in settings
-    const langSelect = document.getElementById('settings-lang-select');
-    if (langSelect) {
-      langSelect.addEventListener('change', (e) => {
-        I18n.setLanguage(e.target.value);
-        Toast.show(t('toast_save_success'), 'success');
-      });
-    }
-
-    // Supabase Connection Settings
+    // Test connection button
     const testBtn = document.getElementById('settings-db-test-btn');
-    const saveBtn = document.getElementById('settings-db-save-btn');
-    const statusMsg = document.getElementById('settings-db-status-msg');
+    if (testBtn) {
+      testBtn.addEventListener('click', async () => {
+        const url = urlInput.value.trim();
+        const key = keyInput.value.trim();
 
-    testBtn?.addEventListener('click', async () => {
-      const url = document.getElementById('settings-db-url')?.value.trim();
-      const key = document.getElementById('settings-db-key')?.value.trim();
-
-      if (!url || !key) {
-        Toast.show('Escribe la URL y la Anon Key', 'warning');
-        return;
-      }
-
-      testBtn.disabled = true;
-      testBtn.textContent = 'Probando...';
-      if (statusMsg) {
-        statusMsg.style.display = 'block';
-        statusMsg.style.color = 'var(--text-secondary)';
-        statusMsg.textContent = 'Conectando con Supabase...';
-      }
-
-      const ok = await SupabaseClient.testConnection(url, key);
-      testBtn.disabled = false;
-      testBtn.textContent = 'Probar Conexión';
-
-      if (statusMsg) {
-        if (ok) {
-          statusMsg.style.color = 'var(--accent-green)';
-          statusMsg.textContent = '¡Conexión exitosa! Las tablas responden correctamente. ✓';
-          Toast.show('Conexión exitosa ✓', 'success');
-        } else {
-          statusMsg.style.color = 'var(--danger)';
-          statusMsg.textContent = 'Error de conexión. Verifica la URL y la Anon Key.';
-          Toast.show('Error de conexión', 'error');
+        if (!url || !key) {
+          Toast.show('Por favor ingresa la URL y la Anon Key', 'error');
+          return;
         }
-      }
-    });
 
-    saveBtn?.addEventListener('click', () => {
-      const url = document.getElementById('settings-db-url')?.value.trim();
-      const key = document.getElementById('settings-db-key')?.value.trim();
+        testBtn.textContent = 'Probando...';
+        testBtn.disabled = true;
 
-      SupabaseClient.setCredentials(url, key);
-      Toast.show('Configuración guardada ✓', 'success');
-      
-      // Reload page to re-initialize supabase client and sync views
-      setTimeout(() => location.reload(), 1000);
-    });
+        const isOk = await SupabaseClient.testConnection(url, key);
+        
+        testBtn.textContent = t('settings_btn_test');
+        testBtn.disabled = false;
 
-    // Export button
-    document.getElementById('settings-export-btn')?.addEventListener('click', exportData);
+        if (isOk) {
+          Toast.show('¡Conexión con Supabase exitosa! ✓', 'success');
+        } else {
+          Toast.show('Error: No se pudo conectar a Supabase', 'error');
+        }
+      });
+    }
 
-    // Reset button
-    document.getElementById('settings-reset-btn')?.addEventListener('click', resetAllData);
+    // Save connection button
+    const saveBtn = document.getElementById('settings-db-save-btn');
+    if (saveBtn) {
+      saveBtn.addEventListener('click', () => {
+        const url = urlInput.value.trim();
+        const key = keyInput.value.trim();
 
-    // Reset day button in settings
-    document.getElementById('settings-reset-day-btn')?.addEventListener('click', () => {
-      if (!confirm('¿Reiniciar el progreso del día de hoy?')) return;
-      Storage.resetDay();
-      DashboardView.render();
-      Toast.show('Día reiniciado ✓', 'success');
-    });
+        SupabaseClient.setCredentials(url, key);
+        Toast.show('Credenciales guardadas con éxito ✓', 'success');
+        
+        // Reload page to re-initialize Supabase client
+        setTimeout(() => location.reload(), 800);
+      });
+    }
+
+    // Reset day button
+    const resetDayBtn = document.getElementById('settings-reset-day-btn');
+    if (resetDayBtn) {
+      resetDayBtn.addEventListener('click', () => {
+        if (confirm('¿Seguro que deseas reiniciar el progreso de hidratación, hábitos y suplementos de hoy?')) {
+          Storage.resetDay();
+          Toast.show('Día reiniciado correctamente ✓', 'success');
+          
+          if (window.Router && Router.getCurrent() === 'dashboard') {
+            DashboardView.render();
+          }
+        }
+      });
+    }
   }
 
-  return { render, init };
+  function render() {
+    const creds = SupabaseClient.getCredentials();
+    const urlInput = document.getElementById('settings-sb-url');
+    const keyInput = document.getElementById('settings-sb-key');
+    
+    if (urlInput) urlInput.value = creds.url;
+    if (keyInput) keyInput.value = creds.key;
+  }
+
+  return {
+    init,
+    render
+  };
 })();
+
+window.SettingsView = SettingsView;
